@@ -708,20 +708,16 @@
                 }
 
                 // 音声を停止して解説画面へ
-                // ▼▼▼ 修正：音声を停止して解説画面へ ▼▼▼
                 audioPlayer.pause();
-                audioPlayer.currentTime = 0; // ★追加：再生位置を最初（0秒）に巻き戻す（問題2の解決）
 
-                // ★追加：裏で動いているイントロ再生のタイマーを強制ストップする（問題1の解決）
-                // （※変数名が違う場合があるので、念のためよく使われる2つの名前を両方ストップさせています）
-                if (typeof playTimer !== 'undefined') clearTimeout(playTimer);
-                if (typeof quizTimer !== 'undefined') clearTimeout(quizTimer);
+                // ★追加：生き残っている時限爆弾（タイマー）を確実に解除する
+                if (typeof stopTimer !== 'undefined' && stopTimer) {
+                    clearTimeout(stopTimer);
+                }
 
-                // ※もしこれでも直らない場合は、「submitAnswer()」の中にある 
-                // clearTimeout(〇〇); という一文を探して、ここにコピーしてきてください。
+                audioPlayer.currentTime = 0; // 再生位置を最初（0秒）に巻き戻す
 
                 showScreen('answer-screen');
-                // ▲▲▲ 修正ここまで ▲▲▲
             }
 
 
