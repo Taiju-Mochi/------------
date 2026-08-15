@@ -682,7 +682,7 @@
             }
         }
 
-        // パスボタンを押した時の処理
+         // パスボタンを押した時の処理
             function passQuestion() {
                 // パスした場合は不正解扱いにする
                 const currentSong = currentQuestions[currentQuestionIndex];
@@ -709,6 +709,14 @@
 
                 // 音声を停止して解説画面へ
                 audioPlayer.pause();
+
+                // ★追加：生き残っている時限爆弾（タイマー）を確実に解除する
+                if (typeof stopTimer !== 'undefined' && stopTimer) {
+                    clearTimeout(stopTimer);
+                }
+
+                audioPlayer.currentTime = 0; // 再生位置を最初（0秒）に巻き戻す
+
                 showScreen('answer-screen');
             }
 
