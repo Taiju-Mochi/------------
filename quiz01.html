@@ -880,7 +880,30 @@
                     }
                 }, 10);
             });
-            // ▲▲ ここまで追加 ▲▲
+
+
+            // === ここから追加：画像の先回り読み込み（プリロード） ===
+                window.addEventListener('load', function () {
+                    // 最初のスタート画面が表示されてから1秒後に、全画像を裏側でこっそりダウンロード開始
+                    setTimeout(function () {
+                        songDatabase.forEach(function (song) {
+                            if (song.image) {
+                                const preImg = new Image();
+                                preImg.src = song.image;
+                            }
+                        });
+                    }, 1000);
+                });
+                // === ここまで追加 ===
+
+
+
+
+
+
+
+
+        
     </script>
 </body>
 
