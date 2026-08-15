@@ -6,20 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>シャニマスイントロクイズ</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
     <!-- jQuery と Select2 の読み込み -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <style>
-        /* 画面全体の背景（温かみのあるオレンジ・ピンク系のグラデーション） */
+        
         /* 画面全体の背景 */
         body { 
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; 
+            font-family: 'M PLUS Rounded 1c', 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; 
             padding: 20px; 
             margin: 0;
             min-height: 100vh;
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            background: linear-gradient(135deg, #cce0ff 0%, #8dbbff 100%);
             /* フレックスボックスをやめて確実な中央揃えに変更しました */
         }
 
@@ -48,7 +49,17 @@
         }
     
         /* 文字色と影の調整 */
-        h1,
+        #start-screen h1 {
+            color: #ffffff;
+            text-align: center;
+            text-shadow: 
+                2px 2px 0 #8dbbff,
+                -2px -2px 0 #8dbbff,
+                2px -2px 0 #8dbbff,
+                -2px 2px 0 #8dbbff,
+                0px 5px 8px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
         h2,
         h3,
         label,
@@ -140,8 +151,14 @@
                 font-size: 48px !important; /* スマホでは点数の文字を少しだけ小さく */
             }
             /* ▼▼ 追加：タイトルの文字をスマホに合わせて少し小さくする ▼▼ */
-            h1 {
-                font-size: 24px;
+            #start-screen h1 {
+                font-size: 28px;
+                text-shadow: 
+                    1.5px 1.5px 0 #8dbbff,
+                    -1.5px -1.5px 0 #8dbbff,
+                    1.5px -1.5px 0 #8dbbff,
+                    -1.5px 1.5px 0 #8dbbff,
+                    0px 3px 5px rgba(0,0,0,0.3);
             }
             /* ▼▼ 追加：結果画面のテキストを絶対に途中で改行させない ▼▼ */
             #rank-text {
@@ -190,7 +207,7 @@
                 <select id="quiz-level" onchange="resetTimer()">
                     <option value="3000">レベル1 (3秒)</option>
                     <option value="1500">レベル2 (1.5秒)</option>
-                    <option value="500">レベル3 (0.5秒)</option>
+                    <option value="800">レベル3 (0.5秒)</option>
                 </select>
             </label>
         </div>
@@ -279,7 +296,7 @@
             { title: "We can go now!", genre: "イルミネーションスターズ", src: "audio/We can go now! [nTkMCLcRb1g].mp3", image: "images/FRAGMENT_WING02.jpg" },
             { title: "トライアングル", genre: "イルミネーションスターズ", src: "audio/トライアングル [lcwu-Vcw9Js].mp3", image: "images/FRAGMENT_WING02.jpg" },
             { title: "Twinkle way", genre: "イルミネーションスターズ", src: "audio/Twinkle way [SdY0kWK1RPg].mp3", image: "images/GRADATE_WING02.jpg" },
-            { title: "Happy Funny Lucky", genre: "イルミネーションスターズ", src: "audio/Happy Funny Lucky [uMY_qIoWgnk].mp3", image: "images/GRADATE_WING02.jpg" },
+            { title: "Happy Funny Lucky", genre: "イルミネーションスターズ", src: "audio/Happy Funny Lucky [uMY_qIoWgnk].mp3", image: "images/GRADATE_WING02.jpg", start:3.0},
             { title: "PRISISM", genre: "イルミネーションスターズ", src: "audio/PRISISM [eBudCFyDKQg].mp3", image: "images/LAYERED_WING02.jpg" },
             { title: "スマイルシンフォニア", genre: "イルミネーションスターズ", src: "audio/スマイルシンフォニア [tr_leWHLafc].mp3", image: "images/LAYERED_WING02.jpg" },
             { title: "FELICE", genre: "イルミネーションスターズ", src: "audio/FELICE [6SP2DOCIjqY].mp3", image: "images/PANORAMA_WING02.jpg" },
@@ -421,7 +438,7 @@
             { title: "平行線の美学", genre: "コメティック", src: "audio/平行線の美学 [y6RIPflxByI].mp3", image: "images/CANVAS08.jpg" },
             { title: "泥濘鳴鳴", genre: "コメティック", src: "audio/泥濘鳴鳴 [CuRIuFRD1zI].mp3", image: "images/ECHOES08.jpg" },
             { title: "Clean.Clean up", genre: "コメティック", src: "audio/Clean.Clean up [4T-khJ2WrG0].mp3", image: "images/ECHOES08.jpg" },
-            { title: "似セ物", genre: "コメティック", src: "audio/似セ者 [zCNzLLWFPjI].mp3", image: "images/円環03.jpg" },
+            { title: "似セ者", genre: "コメティック", src: "audio/似セ者 [zCNzLLWFPjI].mp3", image: "images/円環03.jpg" },
             { title: "ハナムケのハナタバ", genre: "コメティック", src: "audio/ハナムケのハナタバ [JRSbcYR6FWE].mp3", image: "images/ハナハナ.jpg" },
             { title: "Heads or Tails?", genre: "コメティック", src: "audio/Heads or Tails？ [bQZw4JzZnhI].mp3", image: "images/HeadsorTails.jpg" },
             { title: "アイノウ", genre: "コメティック", src: "audio/アイノウ [5bayGoEJGGs].mp3", image: "images/シャニソン02.jpg" },
@@ -433,10 +450,10 @@
             { title: "Ambitious Eve", genre: "シャイニーカラーズ", src: "audio/Ambitious Eve -28 colors- [Jv8o1Ib_x78].mp3", image: "images/FRAGMENT_WING01.jpg" },
             { title: "いつか Shiny Days", genre: "シャイニーカラーズ", src: "audio/いつか Shiny Days -28 colors- [aGHDo0ckBC8].mp3", image: "images/FRAGMENT_WING01.jpg" },
             { title: "FUTURITY SMILE", genre: "シャイニーカラーズ", src: "audio/FUTURITY SMILE -28 colors- [Q6ASJ7SKrHw].mp3", image: "images/FUTURITY_SMILE.jpg" },
-            { title: "SWEET♡STEP", genre: "シャイニーカラーズ", src: "audio/SWEET♡STEP -28 colors- [dc_uCJQIeRQ].mp3", image: "images/SWEET_STEP.jpg" },
+            { title: "SWEET♡STEP", genre: "シャイニーカラーズ", src: "audio/SWEETSTEP -28 colors- [dc_uCJQIeRQ].mp3", image: "images/SWEET_STEP.jpg" },
             { title: "シャイノグラフィ", genre: "シャイニーカラーズ", src: "audio/シャイノグラフィ -28 colors- [5BHV0ojGrqU].mp3", image: "images/GRADATE_WING01.jpg" },
             { title: "Dye the sky.", genre: "シャイニーカラーズ", src: "audio/Dye the sky. -28 colors- [6za_i36bREI].mp3", image: "images/GRADATE_WING01.jpg" },
-            { title: "Resonance＋", genre: "シャイニーカラーズ", src: "audio/Resonance⁺ -28 colors- [rwHMc4TQhv4].mp3", image: "images/LAYERED_WING01.jpg" },
+            { title: "Resonance＋", genre: "シャイニーカラーズ", src: "audio/Resonance -28 colors- [rwHMc4TQhv4].mp3", image: "images/LAYERED_WING01.jpg" },
             { title: "Color Days", genre: "シャイニーカラーズ", src: "audio/Color Days -28 colors- [4KoAWGpdruA].mp3", image: "images/LAYERED_WING01.jpg" },
             { title: "虹の行方", genre: "シャイニーカラーズ", src: "audio/虹の行方 -28 colors- [WTU1ZLNe14A].mp3", image: "images/PANORAMA_WING01.jpg" },
             { title: "Daybreak Age", genre: "シャイニーカラーズ", src: "audio/Daybreak Age -28 colors- [9RiMstbJNCU].mp3", image: "images/PANORAMA_WING01.jpg" },
@@ -478,7 +495,7 @@
             { title: "神様は死んだ、って", genre: "ソロ曲", src: "audio/神様は死んだ、って (2024 Remastering Ver.) [4ftrmgThjcY].mp3", image: "images/コメティックソロ.jpg" },
             { title: "無垢", genre: "ソロ曲", src: "audio/無垢 [DfiUOdO8otA].mp3", image: "images/コメティックソロ.jpg" },
             { title: "夢模様キャンバス", genre: "ソロ曲", src: "audio/夢模様キャンバス [lQoDmoMrifo].mp3", image: "images/コメティックソロ.jpg" },
-            { title: "1/3", genre: "ソロ曲", src: "audio/1⧸3 [zj84AbjJndc].mp3", image: "images/コメティックソロ.jpg" },
+            { title: "1/3", genre: "ソロ曲", src: "audio/13 [zj84AbjJndc].mp3", image: "images/コメティックソロ.jpg" },
             { title: "メモワール・アンタクト", genre: "ソロ曲", src: "audio/メモワール・アンタクト [M6R4g87-qzc].mp3", image: "images/騎士団のヴェール.jpg" },
             { title: "月影のアンシェネ", genre: "ソロ曲", src: "audio/月影のアンシェネ [EkmwRqIQcqk].mp3", image: "images/騎士団のヴェール.jpg" },
             { title: "Once Upon a Secret", genre: "ソロ曲", src: "audio/Once Upon a Secret [t7xX7fagpPM].mp3", image: "images/騎士団のヴェール.jpg" },
@@ -539,6 +556,21 @@
                     images: ["images/default_result.jpg"]
                 }
             };
+        
+        // 各ユニットの背景グラデーション設定
+        const unitBackgrounds = {
+            "イルミネーションスターズ": "linear-gradient(135deg, #fffbc2 0%, #fff68d 100%)",
+            "アンティーカ": "linear-gradient(135deg, #b065c2 0%, #853998 100%)",
+            "放課後クライマックスガールズ": "linear-gradient(135deg, #ffb380 0%, #fa8333 100%)",
+            "アルストロメリア": "linear-gradient(135deg, #ffabc8 0%, #ff699e 100%)",                "ストレイライト": "linear-gradient(135deg, #e63955 0%, #af011c 100%)",
+            "ノクチル": "linear-gradient(135deg, #6c84d9 0%, #384d98 100%)",
+            "シーズ": "linear-gradient(135deg, #33c2a8 0%, #008e74 100%)",
+            "コメティック": "linear-gradient(135deg, #666666 0%, #333333 100%)"
+        };
+
+
+
+        
 
 
 
@@ -554,6 +586,52 @@
 
         const correctSE = new Audio('audio/correct.mp3');
         const incorrectSE = new Audio('audio/incorrect.mp3');
+
+
+
+        function normalizeText(str) {
+                if (!str) return "";
+                // 大文字を小文字に変換
+                let normalized = str.toLowerCase();
+                // カタカナをひらがなに変換
+                normalized = normalized.replace(/[\u30A1-\u30F6]/g, function (match) {
+                    return String.fromCharCode(match.charCodeAt(0) - 0x60);
+                });
+                return normalized;
+            }
+
+            function customSearchMatcher(params, data) {
+                if ($.trim(params.term) === '') {
+                    return data;
+                }
+                // ジャンル名（optgroup）の中身も検索できるようにする処理
+                if (data.children) {
+                    const matchedChildren = [];
+                    $.each(data.children, function (index, child) {
+                        const searchTerm = normalizeText(params.term);
+                        const itemText = normalizeText(child.text);
+                        if (itemText.indexOf(searchTerm) > -1) {
+                            matchedChildren.push(child);
+                        }
+                    });
+                    if (matchedChildren.length > 0) {
+                        const modifiedData = $.extend({}, data, true);
+                        modifiedData.children = matchedChildren;
+                        return modifiedData;
+                    }
+                    return null;
+                }
+                // 選択肢（曲名）の判定
+                const searchTerm = normalizeText(params.term);
+                const itemText = normalizeText(data.text);
+                if (itemText.indexOf(searchTerm) > -1) {
+                    return data;
+                }
+                return null;
+            }
+
+
+
 
         // ==========================================
         // 🔄 初期化処理 (ページ読み込み時)
@@ -594,7 +672,8 @@
             answerSelect.select2({
                 placeholder: "-- 曲名を検索・選択 --",
                 allowClear: true,
-                width: '100%'
+                width: '100%',
+                matcher: customSearchMatcher
             });
         });
 
@@ -609,6 +688,16 @@
         function startGame() {
                 const count = parseInt(document.getElementById('question-count').value);
                 const selectedGenre = document.getElementById('start-genre-filter').value;
+
+                // ▼▼ 追加：選択されたジャンルに応じて背景色を変更 ▼▼
+            if (unitBackgrounds[selectedGenre]) {
+                document.body.style.background = unitBackgrounds[selectedGenre];
+            } else {
+                // 指定がない場合（すべて等）はCSSのデフォルト（シャニマスカラー）に戻す
+                document.body.style.background = "";
+            }
+            // ▲▲ ここまで ▲▲
+
 
                 // 1. 出題する曲の絞り込み
                 let filteredDB = songDatabase;
@@ -650,7 +739,8 @@
                 answerSelect.select2({
                     placeholder: "-- 曲名を検索・選択 --",
                     allowClear: true,
-                    width: '100%'
+                    width: '100%',
+                    matcher: customSearchMatcher
                 });
                 // ▲▲ ここまで ▲▲
 
@@ -663,21 +753,42 @@
             }
 
         function updateQuizUI() {
-            document.getElementById('quiz-status').innerText = `第 ${currentQuestionIndex + 1} 問 / 全 ${currentQuestions.length} 問`;
+                document.getElementById('quiz-status').innerText = `第 ${currentQuestionIndex + 1} 問 / 全 ${currentQuestions.length} 問`;
 
-            // 解答欄のリセット (Select2の見た目もリセット)
-            $('#answer-select').val(null).trigger('change');
+                // 解答欄のリセット (Select2の見た目もリセット)
+                $('#answer-select').val(null).trigger('change');
 
-            resetTimer();
+                resetTimer();
 
-            audioPlayer.src = currentQuestions[currentQuestionIndex].src;
-            audioPlayer.load();
-        }
+                audioPlayer.src = currentQuestions[currentQuestionIndex].src;
+                audioPlayer.load();
+
+                // ▼▼ 追加：曲が読み込まれたら、設定された開始位置にシークバーを合わせる ▼▼
+                audioPlayer.onloadedmetadata = function () {
+                    const startTime = currentQuestions[currentQuestionIndex].start || 0;
+                    audioPlayer.currentTime = startTime;
+                };
+            }
 
         function resetTimer() {
-            remainingTime = parseInt(document.getElementById('quiz-level').value);
-            document.getElementById('quiz-play-btn').innerText = "▶ 曲を再生する";
-        }
+                remainingTime = parseInt(document.getElementById('quiz-level').value);
+                document.getElementById('quiz-play-btn').innerText = "▶ 曲を再生する";
+
+                audioPlayer.pause();
+
+                // ▼▼ 変更：0秒ではなく曲ごとの開始位置に戻す ▼▼
+                if (currentQuestions.length > 0) {
+                    const startTime = currentQuestions[currentQuestionIndex].start || 0;
+                    // エラー回避のため try-catch で囲む
+                    try {
+                        audioPlayer.currentTime = startTime;
+                    } catch (e) { }
+                }
+
+                if (typeof stopTimer !== 'undefined' && stopTimer) {
+                    clearTimeout(stopTimer);
+                }
+            }
 
         function toggleQuizAudio() {
             const btn = document.getElementById('quiz-play-btn');
@@ -718,7 +829,7 @@
 
                 // 解説画面の表示内容をセット
                 document.getElementById('judge-text').innerText = "⏩ パスしました";
-                document.getElementById('judge-text').style.color = "orange";
+                document.getElementById('judge-text').style.color = "#cyan";
                 document.getElementById('correct-song-title').innerText = "正解: " + correctTitle;
 
                 // ▼ jacket ではなく image を見るように修正しました ▼
@@ -738,7 +849,10 @@
                     clearTimeout(stopTimer);
                 }
 
-                audioPlayer.currentTime = 0; // 再生位置を最初（0秒）に巻き戻す
+
+                // ▼▼ 変更：0秒ではなく曲ごとの開始位置に巻き戻す ▼▼
+                const startTime = currentSong.start || 0;
+                audioPlayer.currentTime = startTime;
 
                 showScreen('answer-screen');
             }
@@ -747,55 +861,74 @@
 
 
         function submitAnswer() {
-            const selected = $('#answer-select').val();
-            const currentSong = currentQuestions[currentQuestionIndex];
-            const correctTitle = currentSong.title;
+                const selected = $('#answer-select').val();
+                const currentSong = currentQuestions[currentQuestionIndex];
+                const correctTitle = currentSong.title;
 
-            if (!selected) {
-                alert("曲を選択してください！");
-                return;
+                if (!selected) {
+                    alert("曲を選択してください！");
+                    return;
+                }
+
+                audioPlayer.pause();
+                if (stopTimer) clearTimeout(stopTimer);
+                // ▼▼ 変更：0秒ではなく曲ごとの開始位置に巻き戻す ▼▼
+                const startTime = currentSong.start || 0;
+                audioPlayer.currentTime = startTime;
+
+                const judgeText = document.getElementById('judge-text');
+                if (judgeText.style.textShadow) {
+                    judgeText.style.textShadow = ""; // パス時の縁取りリセット
+                }
+
+                // ▼▼ 特殊な正解判定の追加 ▼▼
+                let isCorrect = false;
+                if (selected === correctTitle) {
+                    isCorrect = true; // 通常の正解
+                } else if (
+                    (correctTitle === "感謝のコントレイル" && selected === "キズナシェアリング") ||
+                    (correctTitle === "キズナシェアリング" && selected === "感謝のコントレイル")
+                ) {
+                    isCorrect = true; // どちらを選んでも正解とする例外処理
+                }
+                // ▲▲ ここまで ▲▲
+
+                // 判定結果による処理の分岐
+                if (isCorrect) {
+                    judgeText.innerText = "⭕ 正解！";
+                    judgeText.style.color = "green";
+                    correctSE.currentTime = 0;
+                    correctSE.play();
+                    score++;
+                } else {
+                    judgeText.innerText = "❌ 不正解...";
+                    judgeText.style.color = "red";
+                    incorrectSE.currentTime = 0;
+                    incorrectSE.play();
+                }
+
+                // 解説画面の曲名表示（データベース上の正解曲名を表示）
+                document.getElementById('correct-song-title').innerText = `「${correctTitle}」`;
+
+                const jacketImg = document.getElementById('jacket-image');
+                if (currentSong.image) {
+                    jacketImg.src = currentSong.image;
+                    jacketImg.style.display = "block";
+                } else {
+                    jacketImg.style.display = "none";
+                }
+
+                document.getElementById('toggle-audio-btn').innerText = "▶ 再生";
+
+                const nextBtn = document.getElementById('next-btn');
+                if (currentQuestionIndex === currentQuestions.length - 1) {
+                    nextBtn.innerText = "結果発表へ";
+                } else {
+                    nextBtn.innerText = "次の問題へ";
+                }
+
+                showScreen('answer-screen');
             }
-
-            audioPlayer.pause();
-            if (stopTimer) clearTimeout(stopTimer);
-            audioPlayer.currentTime = 0;
-
-            const judgeText = document.getElementById('judge-text');
-
-            if (selected === correctTitle) {
-                judgeText.innerText = "⭕ 正解！";
-                judgeText.style.color = "green";
-                correctSE.currentTime = 0;
-                correctSE.play();
-                score++;
-            } else {
-                judgeText.innerText = "❌ 不正解...";
-                judgeText.style.color = "red";
-                incorrectSE.currentTime = 0;
-                incorrectSE.play();
-            }
-
-            document.getElementById('correct-song-title').innerText = `「${correctTitle}」`;
-
-            const jacketImg = document.getElementById('jacket-image');
-            if (currentSong.image) {
-                jacketImg.src = currentSong.image;
-                jacketImg.style.display = "block";
-            } else {
-                jacketImg.style.display = "none";
-            }
-
-            document.getElementById('toggle-audio-btn').innerText = "▶ 再生";
-
-            const nextBtn = document.getElementById('next-btn');
-            if (currentQuestionIndex === currentQuestions.length - 1) {
-                nextBtn.innerText = "結果発表へ";
-            } else {
-                nextBtn.innerText = "次の問題へ";
-            }
-
-            showScreen('answer-screen');
-        }
 
         function toggleAudio() {
             const btn = document.getElementById('toggle-audio-btn');
@@ -892,6 +1025,10 @@
 
         function resetGame() {
             audioPlayer.pause();
+            showScreen('start-screen');
+            // ▼▼ 追加：トップに戻る時に背景色をデフォルトに戻す ▼▼
+            document.body.style.background = "";
+
             showScreen('start-screen');
         }
 

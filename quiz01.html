@@ -3,51 +3,70 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>シャニマスイントロクイズ</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap"
+        rel="stylesheet">
     <!-- jQuery と Select2 の読み込み -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <style>
-        /* 画面全体の背景（温かみのあるオレンジ・ピンク系のグラデーション） */
         /* 画面全体の背景 */
-        body { 
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; 
-            padding: 20px; 
+        body {
+            font-family: 'M PLUS Rounded 1c', 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            padding: 20px;
             margin: 0;
             min-height: 100vh;
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            background: linear-gradient(135deg, #cce0ff 0%, #8dbbff 100%);
             /* フレックスボックスをやめて確実な中央揃えに変更しました */
         }
 
         /* メイン画面の枠組み（すりガラスパネル） */
         /* メイン画面の枠組み（すりガラスパネルを大きく拡大） */
-        .screen { 
-            display: none; 
+        .screen {
+            display: none;
             width: 100%;
-            min-width: 320px; 
-            max-width: 800px; /* ★ 600pxから800pxに拡大しました */
-            margin: 5vh auto; 
+            min-width: 320px;
+            max-width: 800px;
+            /* ★ 600pxから800pxに拡大しました */
+            margin: 5vh auto;
             background: rgba(255, 255, 255, 0.35);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 20px;
-            padding: 45px; /* ★ パディングを増やしてゆったりさせました */
+            padding: 45px;
+            /* ★ パディングを増やしてゆったりさせました */
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
-            font-size: 18px; /* ★ 全体の基本文字サイズを大きくしました */
+            font-size: 18px;
+            /* ★ 全体の基本文字サイズを大きくしました */
         }
-        .screen.active { display: block; }
-    
+
         .screen.active {
             display: block;
         }
-    
+
+        .screen.active {
+            display: block;
+        }
+
         /* 文字色と影の調整 */
-        h1,
+        #start-screen h1 {
+            color: #ffffff;
+            text-align: center;
+            text-shadow:
+                2px 2px 0 #8dbbff,
+                -2px -2px 0 #8dbbff,
+                2px -2px 0 #8dbbff,
+                -2px 2px 0 #8dbbff,
+                0px 5px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
         h2,
         h3,
         label,
@@ -55,7 +74,7 @@
             color: #333;
             text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
         }
-    
+
         /* 設定エリアなどの小枠も薄いすりガラスに */
         .settings,
         .audio-controls {
@@ -65,7 +84,7 @@
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.5);
         }
-    
+
         /* ボタンのデザイン（すりガラス＆ホバーで浮き上がる） */
         .btn {
             padding: 12px 20px;
@@ -81,13 +100,13 @@
             transition: all 0.2s ease;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
-    
+
         .btn:hover {
             background: rgba(255, 255, 255, 0.9) !important;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
-    
+
         /* セレクトボックス（入力欄）のデザイン */
         select:not(.select2-hidden-accessible) {
             padding: 10px;
@@ -98,16 +117,16 @@
             border: 1px solid rgba(255, 255, 255, 0.8);
             background: rgba(255, 255, 255, 0.8);
         }
-    
+
         .audio-controls button {
             margin: 0 5px;
             width: 80%;
         }
-    
+
         .dropdown-group {
             margin-bottom: 15px;
         }
-    
+
         /* Select2（検索プルダウン）のジャンル見出し折りたたみ用 */
         .select2-results__group {
             cursor: pointer;
@@ -117,16 +136,47 @@
             margin: 2px 0;
             transition: background-color 0.2s;
         }
-    
+
         .select2-results__group:hover {
             background-color: rgba(255, 255, 255, 0.9);
         }
-    
+
         .select2-results__group::after {
             content: ' ▼';
             font-size: 12px;
             float: right;
             color: #666;
+        }
+
+        /* スマホ画面用の調整（画面幅が600px以下の時だけ適用） */
+        @media (max-width: 600px) {
+            .screen {
+                padding: 20px;
+                /* スマホでは余白を狭くして中身を広く使う */
+                margin: 2vh auto;
+            }
+
+            #score-numerator {
+                font-size: 48px !important;
+                /* スマホでは点数の文字を少しだけ小さく */
+            }
+
+            /* ▼▼ 追加：タイトルの文字をスマホに合わせて少し小さくする ▼▼ */
+            #start-screen h1 {
+                font-size: 28px;
+                text-shadow:
+                    1.5px 1.5px 0 #8dbbff,
+                    -1.5px -1.5px 0 #8dbbff,
+                    1.5px -1.5px 0 #8dbbff,
+                    -1.5px 1.5px 0 #8dbbff,
+                    0px 3px 5px rgba(0, 0, 0, 0.3);
+            }
+
+            /* ▼▼ 追加：結果画面のテキストを絶対に途中で改行させない ▼▼ */
+            #rank-text {
+                white-space: nowrap;
+                font-size: 15px !important;
+            }
         }
     </style>
 </head>
@@ -167,13 +217,13 @@
                 <select id="quiz-level" onchange="resetTimer()">
                     <option value="3000">レベル1 (3秒)</option>
                     <option value="1500">レベル2 (1.5秒)</option>
-                    <option value="500">レベル3 (0.5秒)</option>
+                    <option value="800">レベル3 (0.5秒)</option>
                 </select>
             </label>
         </div>
-<button id="quiz-play-btn" class="btn" onclick="toggleQuizAudio()" style="display: block; margin: 0 auto;">▶
-    曲を再生する</button>
-        
+        <button id="quiz-play-btn" class="btn" onclick="toggleQuizAudio()" style="display: block; margin: 0 auto;">▶
+            曲を再生する</button>
+
 
         <div style="margin-top: 20px;">
             <label>解答を選択してください:</label><br>
@@ -184,8 +234,8 @@
         </div>
         <button class="btn" onclick="submitAnswer()"
             style="margin-top: 20px; background-color: #007bff; color: white; width: 100%; border: none;">解答する</button>
-            <button class="btn" onclick="passQuestion()"
-                style="width: 100%; background-color: #6c757d; color: white; border: none; margin-top: 10px;">パスする</button>
+        <button class="btn" onclick="passQuestion()"
+            style="width: 100%; background-color: #6c757d; color: white; border: none; margin-top: 10px;">パスする</button>
     </div>
 
     <!-- 3. 解答・解説画面 -->
@@ -206,17 +256,17 @@
     </div>
 
     <!-- 4. 結果画面 -->
-    
+
     <div id="result-screen" class="screen">
         <!-- 横並びにするための枠 -->
         <div
             style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 20px;">
-    
+
             <!-- 左側：総合評価とスコア -->
             <div style="width: 45%; text-align: center;">
                 <!-- 総合評価の画像（ご自身で作成されたら画像をimagesフォルダに入れ、ここのsrcのファイル名を合わせてください） -->
                 <img src="images/総合評価.png" alt="総合評価" style="width: 100%; max-width: 200px; margin-bottom: 10px;">
-    
+
                 <!-- 正答数表示（分子大きく、分母小さく） -->
                 <div style="margin-top: 10px; line-height: 1;">
                     <span id="score-numerator"
@@ -226,7 +276,7 @@
                 </div>
                 <h3 id="rank-text" style="color: #ff3b30; margin-top: 10px; font-size: 18px;"></h3>
             </div>
-    
+
             <!-- 右側：アイドル画像 -->
             <div style="width: 50%; text-align: center;">
                 <!-- アイドル画像（大きめに設定） -->
@@ -234,14 +284,14 @@
                     style="width: 100%; max-width: 400px; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.2);">
             </div>
         </div>
-    
+
         <!-- 間違えた曲リスト -->
         <div id="review-area"
             style="display: none; background: rgba(255,255,255,0.5); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
             <h4 style="margin-top: 0; color: #333;">間違えた曲リスト (復習)</h4>
             <ul id="wrong-songs-list" style="text-align: left; margin: 0; padding-left: 20px; color: #555;"></ul>
         </div>
-    
+
         <button class="btn" onclick="resetGame()"
             style="width: 100%; background-color: #007bff; color: white; border: none;">トップに戻る</button>
     </div>
@@ -256,7 +306,7 @@
             { title: "We can go now!", genre: "イルミネーションスターズ", src: "audio/We can go now! [nTkMCLcRb1g].flac", image: "images/FRAGMENT_WING02.jpg" },
             { title: "トライアングル", genre: "イルミネーションスターズ", src: "audio/トライアングル [lcwu-Vcw9Js].flac", image: "images/FRAGMENT_WING02.jpg" },
             { title: "Twinkle way", genre: "イルミネーションスターズ", src: "audio/Twinkle way [SdY0kWK1RPg].flac", image: "images/GRADATE_WING02.jpg" },
-            { title: "Happy Funny Lucky", genre: "イルミネーションスターズ", src: "audio/Happy Funny Lucky [uMY_qIoWgnk].flac", image: "images/GRADATE_WING02.jpg" },
+            { title: "Happy Funny Lucky", genre: "イルミネーションスターズ", src: "audio/Happy Funny Lucky [uMY_qIoWgnk].flac", image: "images/GRADATE_WING02.jpg", start: 3.0 },
             { title: "PRISISM", genre: "イルミネーションスターズ", src: "audio/PRISISM [eBudCFyDKQg].flac", image: "images/LAYERED_WING02.jpg" },
             { title: "スマイルシンフォニア", genre: "イルミネーションスターズ", src: "audio/スマイルシンフォニア [tr_leWHLafc].flac", image: "images/LAYERED_WING02.jpg" },
             { title: "FELICE", genre: "イルミネーションスターズ", src: "audio/FELICE [6SP2DOCIjqY].flac", image: "images/PANORAMA_WING02.jpg" },
@@ -398,7 +448,7 @@
             { title: "平行線の美学", genre: "コメティック", src: "audio/平行線の美学 [y6RIPflxByI].flac", image: "images/CANVAS08.jpg" },
             { title: "泥濘鳴鳴", genre: "コメティック", src: "audio/泥濘鳴鳴 [CuRIuFRD1zI].flac", image: "images/ECHOES08.jpg" },
             { title: "Clean.Clean up", genre: "コメティック", src: "audio/Clean.Clean up [4T-khJ2WrG0].flac", image: "images/ECHOES08.jpg" },
-            { title: "似セ物", genre: "コメティック", src: "audio/似セ者 [zCNzLLWFPjI].flac", image: "images/円環03.jpg" },
+            { title: "似セ者", genre: "コメティック", src: "audio/似セ者 [zCNzLLWFPjI].flac", image: "images/円環03.jpg" },
             { title: "ハナムケのハナタバ", genre: "コメティック", src: "audio/ハナムケのハナタバ [JRSbcYR6FWE].flac", image: "images/ハナハナ.jpg" },
             { title: "Heads or Tails?", genre: "コメティック", src: "audio/Heads or Tails？ [bQZw4JzZnhI].flac", image: "images/HeadsorTails.jpg" },
             { title: "アイノウ", genre: "コメティック", src: "audio/アイノウ [5bayGoEJGGs].flac", image: "images/シャニソン02.jpg" },
@@ -511,11 +561,26 @@
             "コメティック": { images: ["images/Come1.jpg", "images/Come2.jpg", "images/Come3.jpg", "images/Come4.jpg", "images/Come5.jpg", "images/Come6.jpg", "images/Come7.jpg", "images/Come8.jpg", "images/Come9.jpg", "images/Come10.jpg", "images/Come11.jpg", "images/Come12.jpg"] },
 
 
-                // ▼ 画像が1枚だけの場合も、統一して [ ] で囲みます
-                "default": {
-                    images: ["images/default_result.jpg"]
-                }
-            };
+            // ▼ 画像が1枚だけの場合も、統一して [ ] で囲みます
+            "default": {
+                images: ["images/default_result.jpg"]
+            }
+        };
+
+        // 各ユニットの背景グラデーション設定
+        const unitBackgrounds = {
+            "イルミネーションスターズ": "linear-gradient(135deg, #fffbc2 0%, #fff68d 100%)",
+            "アンティーカ": "linear-gradient(135deg, #b065c2 0%, #853998 100%)",
+            "放課後クライマックスガールズ": "linear-gradient(135deg, #ffb380 0%, #fa8333 100%)",
+            "アルストロメリア": "linear-gradient(135deg, #ffabc8 0%, #ff699e 100%)", "ストレイライト": "linear-gradient(135deg, #e63955 0%, #af011c 100%)",
+            "ノクチル": "linear-gradient(135deg, #6c84d9 0%, #384d98 100%)",
+            "シーズ": "linear-gradient(135deg, #33c2a8 0%, #008e74 100%)",
+            "コメティック": "linear-gradient(135deg, #666666 0%, #333333 100%)"
+        };
+
+
+
+
 
 
 
@@ -531,6 +596,52 @@
 
         const correctSE = new Audio('audio/correct.flac');
         const incorrectSE = new Audio('audio/incorrect.flac');
+
+
+
+        function normalizeText(str) {
+            if (!str) return "";
+            // 大文字を小文字に変換
+            let normalized = str.toLowerCase();
+            // カタカナをひらがなに変換
+            normalized = normalized.replace(/[\u30A1-\u30F6]/g, function (match) {
+                return String.fromCharCode(match.charCodeAt(0) - 0x60);
+            });
+            return normalized;
+        }
+
+        function customSearchMatcher(params, data) {
+            if ($.trim(params.term) === '') {
+                return data;
+            }
+            // ジャンル名（optgroup）の中身も検索できるようにする処理
+            if (data.children) {
+                const matchedChildren = [];
+                $.each(data.children, function (index, child) {
+                    const searchTerm = normalizeText(params.term);
+                    const itemText = normalizeText(child.text);
+                    if (itemText.indexOf(searchTerm) > -1) {
+                        matchedChildren.push(child);
+                    }
+                });
+                if (matchedChildren.length > 0) {
+                    const modifiedData = $.extend({}, data, true);
+                    modifiedData.children = matchedChildren;
+                    return modifiedData;
+                }
+                return null;
+            }
+            // 選択肢（曲名）の判定
+            const searchTerm = normalizeText(params.term);
+            const itemText = normalizeText(data.text);
+            if (itemText.indexOf(searchTerm) > -1) {
+                return data;
+            }
+            return null;
+        }
+
+
+
 
         // ==========================================
         // 🔄 初期化処理 (ページ読み込み時)
@@ -571,7 +682,8 @@
             answerSelect.select2({
                 placeholder: "-- 曲名を検索・選択 --",
                 allowClear: true,
-                width: '100%'
+                width: '100%',
+                matcher: customSearchMatcher
             });
         });
 
@@ -584,60 +696,71 @@
         }
 
         function startGame() {
-                const count = parseInt(document.getElementById('question-count').value);
-                const selectedGenre = document.getElementById('start-genre-filter').value;
+            const count = parseInt(document.getElementById('question-count').value);
+            const selectedGenre = document.getElementById('start-genre-filter').value;
 
-                // 1. 出題する曲の絞り込み
-                let filteredDB = songDatabase;
-                if (selectedGenre !== 'all') {
-                    filteredDB = songDatabase.filter(song => song.genre === selectedGenre);
-                }
-
-                let shuffled = [...filteredDB].sort(() => 0.5 - Math.random());
-                const maxQuestions = Math.min(count, shuffled.length);
-
-                if (maxQuestions === 0) {
-                    alert("選択したジャンルに曲が登録されていません。");
-                    return;
-                }
-
-                // ▼▼ 今回の追加箇所：解答プルダウンの中身を出題範囲に合わせる ▼▼
-                const answerSelect = $('#answer-select');
-                answerSelect.empty(); // 今の選択肢を一旦全部消す
-                answerSelect.append('<option value="">-- 曲名を検索・選択 --</option>');
-
-                // 絞り込まれた曲のデータ（filteredDB）だけでリストを作り直す
-                const groupedSongs = {};
-                filteredDB.forEach(song => {
-                    if (!groupedSongs[song.genre]) {
-                        groupedSongs[song.genre] = [];
-                    }
-                    groupedSongs[song.genre].push(song.title);
-                });
-
-                for (const genre in groupedSongs) {
-                    const optgroup = $('<optgroup>').attr('label', genre);
-                    groupedSongs[genre].forEach(title => {
-                        optgroup.append($('<option>').val(title).text(title));
-                    });
-                    answerSelect.append(optgroup);
-                }
-
-                // Select2の見た目を更新
-                answerSelect.select2({
-                    placeholder: "-- 曲名を検索・選択 --",
-                    allowClear: true,
-                    width: '100%'
-                });
-                // ▲▲ ここまで ▲▲
-
-                currentQuestions = shuffled.slice(0, maxQuestions);
-                currentQuestionIndex = 0;
-                score = 0;
-
-                showScreen('quiz-screen');
-                updateQuizUI();
+            // ▼▼ 追加：選択されたジャンルに応じて背景色を変更 ▼▼
+            if (unitBackgrounds[selectedGenre]) {
+                document.body.style.background = unitBackgrounds[selectedGenre];
+            } else {
+                // 指定がない場合（すべて等）はCSSのデフォルト（シャニマスカラー）に戻す
+                document.body.style.background = "";
             }
+            // ▲▲ ここまで ▲▲
+
+
+            // 1. 出題する曲の絞り込み
+            let filteredDB = songDatabase;
+            if (selectedGenre !== 'all') {
+                filteredDB = songDatabase.filter(song => song.genre === selectedGenre);
+            }
+
+            let shuffled = [...filteredDB].sort(() => 0.5 - Math.random());
+            const maxQuestions = Math.min(count, shuffled.length);
+
+            if (maxQuestions === 0) {
+                alert("選択したジャンルに曲が登録されていません。");
+                return;
+            }
+
+            // ▼▼ 今回の追加箇所：解答プルダウンの中身を出題範囲に合わせる ▼▼
+            const answerSelect = $('#answer-select');
+            answerSelect.empty(); // 今の選択肢を一旦全部消す
+            answerSelect.append('<option value="">-- 曲名を検索・選択 --</option>');
+
+            // 絞り込まれた曲のデータ（filteredDB）だけでリストを作り直す
+            const groupedSongs = {};
+            filteredDB.forEach(song => {
+                if (!groupedSongs[song.genre]) {
+                    groupedSongs[song.genre] = [];
+                }
+                groupedSongs[song.genre].push(song.title);
+            });
+
+            for (const genre in groupedSongs) {
+                const optgroup = $('<optgroup>').attr('label', genre);
+                groupedSongs[genre].forEach(title => {
+                    optgroup.append($('<option>').val(title).text(title));
+                });
+                answerSelect.append(optgroup);
+            }
+
+            // Select2の見た目を更新
+            answerSelect.select2({
+                placeholder: "-- 曲名を検索・選択 --",
+                allowClear: true,
+                width: '100%',
+                matcher: customSearchMatcher
+            });
+            // ▲▲ ここまで ▲▲
+
+            currentQuestions = shuffled.slice(0, maxQuestions);
+            currentQuestionIndex = 0;
+            score = 0;
+
+            showScreen('quiz-screen');
+            updateQuizUI();
+        }
 
         function updateQuizUI() {
             document.getElementById('quiz-status').innerText = `第 ${currentQuestionIndex + 1} 問 / 全 ${currentQuestions.length} 問`;
@@ -649,11 +772,32 @@
 
             audioPlayer.src = currentQuestions[currentQuestionIndex].src;
             audioPlayer.load();
+
+            // ▼▼ 追加：曲が読み込まれたら、設定された開始位置にシークバーを合わせる ▼▼
+            audioPlayer.onloadedmetadata = function () {
+                const startTime = currentQuestions[currentQuestionIndex].start || 0;
+                audioPlayer.currentTime = startTime;
+            };
         }
 
         function resetTimer() {
             remainingTime = parseInt(document.getElementById('quiz-level').value);
             document.getElementById('quiz-play-btn').innerText = "▶ 曲を再生する";
+
+            audioPlayer.pause();
+
+            // ▼▼ 変更：0秒ではなく曲ごとの開始位置に戻す ▼▼
+            if (currentQuestions.length > 0) {
+                const startTime = currentQuestions[currentQuestionIndex].start || 0;
+                // エラー回避のため try-catch で囲む
+                try {
+                    audioPlayer.currentTime = startTime;
+                } catch (e) { }
+            }
+
+            if (typeof stopTimer !== 'undefined' && stopTimer) {
+                clearTimeout(stopTimer);
+            }
         }
 
         function toggleQuizAudio() {
@@ -683,42 +827,45 @@
         }
 
         // パスボタンを押した時の処理
-            function passQuestion() {
-                // パスした場合は不正解扱いにする
-                const currentSong = currentQuestions[currentQuestionIndex];
-                const correctTitle = currentSong.title;
+        function passQuestion() {
+            // パスした場合は不正解扱いにする
+            const currentSong = currentQuestions[currentQuestionIndex];
+            const correctTitle = currentSong.title;
 
-                // 間違えた曲リストに追加
-                if (typeof wrongSongs !== 'undefined') {
-                    wrongSongs.push(correctTitle);
-                }
-
-                // 解説画面の表示内容をセット
-                document.getElementById('judge-text').innerText = "⏩ パスしました";
-                document.getElementById('judge-text').style.color = "orange";
-                document.getElementById('correct-song-title').innerText = "正解: " + correctTitle;
-
-                // ▼ jacket ではなく image を見るように修正しました ▼
-                const jacketImg = document.getElementById('jacket-image');
-                if (currentSong.image) {
-                    jacketImg.src = currentSong.image;
-                    jacketImg.style.display = "block";
-                } else {
-                    jacketImg.style.display = "none";
-                }
-
-                // 音声を停止して解説画面へ
-                audioPlayer.pause();
-
-                // ★追加：生き残っている時限爆弾（タイマー）を確実に解除する
-                if (typeof stopTimer !== 'undefined' && stopTimer) {
-                    clearTimeout(stopTimer);
-                }
-
-                audioPlayer.currentTime = 0; // 再生位置を最初（0秒）に巻き戻す
-
-                showScreen('answer-screen');
+            // 間違えた曲リストに追加
+            if (typeof wrongSongs !== 'undefined') {
+                wrongSongs.push(correctTitle);
             }
+
+            // 解説画面の表示内容をセット
+            document.getElementById('judge-text').innerText = "⏩ パスしました";
+            document.getElementById('judge-text').style.color = "#cyan";
+            document.getElementById('correct-song-title').innerText = "正解: " + correctTitle;
+
+            // ▼ jacket ではなく image を見るように修正しました ▼
+            const jacketImg = document.getElementById('jacket-image');
+            if (currentSong.image) {
+                jacketImg.src = currentSong.image;
+                jacketImg.style.display = "block";
+            } else {
+                jacketImg.style.display = "none";
+            }
+
+            // 音声を停止して解説画面へ
+            audioPlayer.pause();
+
+            // ★追加：生き残っている時限爆弾（タイマー）を確実に解除する
+            if (typeof stopTimer !== 'undefined' && stopTimer) {
+                clearTimeout(stopTimer);
+            }
+
+
+            // ▼▼ 変更：0秒ではなく曲ごとの開始位置に巻き戻す ▼▼
+            const startTime = currentSong.start || 0;
+            audioPlayer.currentTime = startTime;
+
+            showScreen('answer-screen');
+        }
 
 
 
@@ -735,11 +882,29 @@
 
             audioPlayer.pause();
             if (stopTimer) clearTimeout(stopTimer);
-            audioPlayer.currentTime = 0;
+            // ▼▼ 変更：0秒ではなく曲ごとの開始位置に巻き戻す ▼▼
+            const startTime = currentSong.start || 0;
+            audioPlayer.currentTime = startTime;
 
             const judgeText = document.getElementById('judge-text');
+            if (judgeText.style.textShadow) {
+                judgeText.style.textShadow = ""; // パス時の縁取りリセット
+            }
 
+            // ▼▼ 特殊な正解判定の追加 ▼▼
+            let isCorrect = false;
             if (selected === correctTitle) {
+                isCorrect = true; // 通常の正解
+            } else if (
+                (correctTitle === "感謝のコントレイル" && selected === "キズナシェアリング") ||
+                (correctTitle === "キズナシェアリング" && selected === "感謝のコントレイル")
+            ) {
+                isCorrect = true; // どちらを選んでも正解とする例外処理
+            }
+            // ▲▲ ここまで ▲▲
+
+            // 判定結果による処理の分岐
+            if (isCorrect) {
                 judgeText.innerText = "⭕ 正解！";
                 judgeText.style.color = "green";
                 correctSE.currentTime = 0;
@@ -752,6 +917,7 @@
                 incorrectSE.play();
             }
 
+            // 解説画面の曲名表示（データベース上の正解曲名を表示）
             document.getElementById('correct-song-title').innerText = `「${correctTitle}」`;
 
             const jacketImg = document.getElementById('jacket-image');
@@ -870,39 +1036,43 @@
         function resetGame() {
             audioPlayer.pause();
             showScreen('start-screen');
+            // ▼▼ 追加：トップに戻る時に背景色をデフォルトに戻す ▼▼
+            document.body.style.background = "";
+
+            showScreen('start-screen');
         }
 
         // ▼▼ ここから追加 ▼▼
-            // 1. ジャンル見出しをクリックしたら、その中の曲リストを開閉する
-            $(document).on('click', '.select2-results__group', function () {
-                $(this).siblings('ul').slideToggle(200);
-            });
+        // 1. ジャンル見出しをクリックしたら、その中の曲リストを開閉する
+        $(document).on('click', '.select2-results__group', function () {
+            $(this).siblings('ul').slideToggle(200);
+        });
 
-            // 2. プルダウンを開いた直後は、ジャンルを閉じた状態（見出しだけ）にしておく
-            $('#answer-select').on('select2:open', function () {
-                // Select2が画面を作るのを一瞬待つ必要があるため setTimeout を使用
-                setTimeout(function () {
-                    // 文字を検索していない初期状態の時だけ閉じる
-                    if ($('.select2-search__field').val() === '') {
-                        $('.select2-results__group').siblings('ul').hide();
+        // 2. プルダウンを開いた直後は、ジャンルを閉じた状態（見出しだけ）にしておく
+        $('#answer-select').on('select2:open', function () {
+            // Select2が画面を作るのを一瞬待つ必要があるため setTimeout を使用
+            setTimeout(function () {
+                // 文字を検索していない初期状態の時だけ閉じる
+                if ($('.select2-search__field').val() === '') {
+                    $('.select2-results__group').siblings('ul').hide();
+                }
+            }, 10);
+        });
+
+
+        // === ここから追加：画像の先回り読み込み（プリロード） ===
+        window.addEventListener('load', function () {
+            // 最初のスタート画面が表示されてから1秒後に、全画像を裏側でこっそりダウンロード開始
+            setTimeout(function () {
+                songDatabase.forEach(function (song) {
+                    if (song.image) {
+                        const preImg = new Image();
+                        preImg.src = song.image;
                     }
-                }, 10);
-            });
-
-
-            // === ここから追加：画像の先回り読み込み（プリロード） ===
-                window.addEventListener('load', function () {
-                    // 最初のスタート画面が表示されてから1秒後に、全画像を裏側でこっそりダウンロード開始
-                    setTimeout(function () {
-                        songDatabase.forEach(function (song) {
-                            if (song.image) {
-                                const preImg = new Image();
-                                preImg.src = song.image;
-                            }
-                        });
-                    }, 1000);
                 });
-                // === ここまで追加 ===
+            }, 1000);
+        });
+        // === ここまで追加 ===
 
 
 
@@ -911,7 +1081,7 @@
 
 
 
-        
+
     </script>
 </body>
 
