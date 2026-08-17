@@ -590,6 +590,7 @@
         let currentQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
+        let resultIdolImageSrc="";
 
         let audioPlayer = new Audio();
         let stopTimer = null;
@@ -771,23 +772,33 @@
                 // ▲▲ ここまで ▲▲
 
                 currentQuestions = shuffled.slice(0, maxQuestions);
-                currentQuestionIndex = 0;
-                score = 0;
+            currentQuestionIndex = 0;
+            score = 0;
 
-                // ▼▼ 追加：今回出題される曲のジャケ写と、結果画面で使う可能性のある
-            //          アイドル画像を、ゲーム開始と同時に裏側で先読みしておく ▼▼
+            // ▼▼ 曲のジャケ写を先読み ▼▼
             preloadImageList(currentQuestions.map(song => song.image));
+
+            // ▼▼ 変更：結果画面のアイドル画像は「今」1枚だけ抽選して確定させ、
+            //          それだけを最優先で先読みする（毎回大量に読み込むのをやめる） ▼▼
+            let targetImages = [];
             if (genreResultData[selectedGenre] && genreResultData[selectedGenre].images) {
-                preloadImageList(genreResultData[selectedGenre].images);
+                targetImages = genreResultData[selectedGenre].images;
             } else {
                 for (const key in genreResultData) {
                     if (genreResultData[key] && genreResultData[key].images) {
-                        preloadImageList(genreResultData[key].images);
+                        targetImages = targetImages.concat(genreResultData[key].images);
                     }
                 }
             }
+            resultIdolImageSrc = targetImages.length > 0
+                ? targetImages[Math.floor(Math.random() * targetImages.length)]
+                : "";
+            preloadImage(resultIdolImageSrc);
             preloadImage("images/総合評価.png");
             // ▲▲ ここまで ▲▲
+
+            showScreen('quiz-screen');
+            updateQuizUI();
 
                 showScreen('quiz-screen');
                 updateQuizUI();
@@ -1066,33 +1077,10 @@
                     if (reviewArea) reviewArea.style.display = 'none';
                 }
 
-                // 3. アイドル画像の設定（ジャンル指定に関わらず、全画像から集めてランダム選択）
-                const selectedGenre = document.getElementById('start-genre-filter').value;
-                let targetImages = [];
+                // 3. アイドル画像の設定（ゲーム開始時に確定・先読み済みの画像をそのまま表示）
+                document.getElementById('result-idol-image').src = resultIdolImageSrc;
 
-                // 1. まず、選ばれたジャンルの画像があればそれを候補に入れる
-                if (genreResultData[selectedGenre] && genreResultData[selectedGenre].images) {
-                    targetImages = targetImages.concat(genreResultData[selectedGenre].images);
-                }
-
-                // 2. もしジャンル画像が見つからない場合（「すべて」を選んだ場合など）、全ジャンルの画像を全て集める
-                if (targetImages.length === 0) {
-                    for (const key in genreResultData) {
-                        // default や他の項目も含めて、images配列を持っているものから全てかき集める
-                        if (genreResultData[key] && genreResultData[key].images) {
-                            targetImages = targetImages.concat(genreResultData[key].images);
-                        }
-                    }
-                }
-
-                // 3. 集めた候補の中からランダムに1枚選んで表示する
-                if (targetImages.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * targetImages.length);
-                    document.getElementById('result-idol-image').src = targetImages[randomIndex];
-                } else {
-                    document.getElementById('result-idol-image').src = "";
-                }
-
+               
                 // 4. ランク判定
                 const accuracy = score / currentQuestions.length;
                 const rankText = document.getElementById('rank-text');
