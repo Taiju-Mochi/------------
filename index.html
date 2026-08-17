@@ -42,7 +42,7 @@
             box-sizing: border-box;
             font-size: 18px; /* ★ 全体の基本文字サイズを大きくしました */
         }
-        .screen.active { display: block; }
+        
     
         .screen.active {
             display: block;
@@ -125,9 +125,7 @@
             width: 80%;
         }
     
-        .dropdown-group {
-            margin-bottom: 15px;
-        }
+        
     
         /* Select2（検索プルダウン）のジャンル見出し折りたたみ用 */
         .select2-results__group {
@@ -216,15 +214,11 @@
             <div style="display: flex; justify-content: space-between; gap: 10px;">
                 <!-- ▼ レベル3の data-value の数字(1000)は現在の設定に合わせてください ▼ -->
                 <button class="btn level-btn active" data-value="1000" onclick="selectLevel(this)"
-                    style="flex: 1; padding: 10px 2px; font-size: 15px; margin: 0;">レベル3<br><span
-                        style="font-size:11px; font-weight:normal;"></span></button>
+                    style="flex: 1; padding: 10px 2px; font-size: 15px; margin: 0;">レベル3</button>
                 <button class="btn level-btn" data-value="mid_intro" onclick="selectLevel(this)"
-                    style="flex: 1; padding: 10px 2px; font-size: 15px; margin: 0;">レベル2<br><span
-                        style="font-size:11px; font-weight:normal;"></span></button>
+                    style="flex: 1; padding: 10px 2px; font-size: 15px; margin: 0;">レベル2</button>
                 <button class="btn level-btn" data-value="intro" onclick="selectLevel(this)"
-                    style="flex: 1; padding: 10px 2px; font-size: 15px; margin: 0;">レベル1<br><span
-                        style="font-size:11px; font-weight:normal;">
-                    </span></button>
+                    style="flex: 1; padding: 10px 2px; font-size: 15px; margin: 0;">レベル1</button>
             </div>
             <!-- 裏でタイマー計算に使うための隠し項目（初期値はレベル3の値） -->
             <input type="hidden" id="quiz-level" value="1000">
@@ -341,8 +335,8 @@
             { title: "浮動性イノセンス", genre: "アンティーカ", src: "audio/浮動性イノセンス [288td1ES8So].mp3", image: "images/PANORAMA_WING03.jpg", introMid:13.0, introEnd:26.3 },
             { title: "愚者の独白", genre: "アンティーカ", src: "audio/愚者の独白 [31tL35yYFrY].mp3", image: "images/PANORAMA_WING03.jpg" , introEnd:22.0, introMid:12.0},
             { title: "とある英雄たちの物語", genre: "アンティーカ", src: "audio/とある英雄たちの物語 [X3G6sqNjqgc].mp3", image: "images/CANVAS02.jpg", shorten:300, introMid:3.3, introEnd:15.7 },
-            { title: "Unsung Heroes", genre: "アンティーカ", src: "audio/Unsung Heroes [U5JkNmBaYS8].mp3", image: "images/CANVAS02.jpg", introENd:11.5, introMid:5.5 },
-            { title: "有彩色ユリイカ", genre: "アンティーカ", src: "audio/有彩色ユリイカ [mBQ17J-Nd4Q].mp3", image: "images/CANVAS02.jpg", introEnd:26.4, introMid:12.0, start:1.3 },
+            { title: "Unsung Heroes", genre: "アンティーカ", src: "audio/Unsung Heroes [U5JkNmBaYS8].mp3", image: "images/CANVAS02.jpg", introEnd:11.5, introMid:5.5 },
+            { title: "有彩色ユリイカ", genre: "アンティーカ", src: "audio/有彩色ユリイカ [mBQ17J-Nd4Q].mp3", image: "images/CANVAS02.jpg", introEnd:26.4, introMid:12.0, start:1.0 },
             { title: "文明開花輪舞-シティ・ハレルヤ-", genre: "アンティーカ", src: "audio/文明開花輪舞 -シティ・ハレルヤ- [MdHyGhj6MYI].mp3", image: "images/ECHOES02.jpg", introShort:1.8, introMid:6.0, introEnd:19.0 },
             { title: "秋の終わり、僕の記憶", genre: "アンティーカ", src: "audio/秋の終わり、僕の記憶 [uKWT5M74fyw].mp3", image: "images/ECHOES02.jpg", introMid:7.2, introEnd:17.7 },
             { title: "ブレイク・アウト・セレンディピティ", genre: "アンティーカ", src: "audio/ブレイク・アウト・セレンディピティ [lHAfNSFvYB0].mp3", image: "images/円環01.jpg", start:0.8, introEnd:30.0, introMid:14.0 },
@@ -354,72 +348,72 @@
             { title: "銀翼のアレジアンス -blade of truth-", genre: "アンティーカ", src: "audio/銀翼のアレジアンス -blade of truth- [HcW46eyL2-0].mp3", image: "images/騎士団のヴェール.jpg", introEnd:30.0, introMid:6.0 },
             { title: "運命前夜", genre: "アンティーカ", src: "audio/運命前夜 [jhMpX8qBzsE].mp3", image: "images/騎士団のヴェール.jpg", introShort:1.8, introMid:3.0, introEnd:6.2 },
             { title: "銀翼のアヴニール -become the brave-", genre: "アンティーカ", src: "audio/銀翼のアヴニール -become the brave- [NDK9ryJVNiA].mp3", image: "images/騎士団のヴェール.jpg" , introEnd:23.3, introMid:9.0},
-            { title: "アルストロメリア", genre: "アルストロメリア", src: "audio/アルストロメリア [dDIeDi-NlGQ].mp3", image: "images/BRILLIANT_WING05.jpg" },
-            { title: "ハピリリ", genre: "アルストロメリア", src: "audio/ハピリリ [n_synseUdIg].mp3", image: "images/BRILLIANT_WING05.jpg" },
-            { title: "Bloomy!", genre: "アルストロメリア", src: "audio/Bloomy! [-NWULtqoal0].mp3", image: "images/FRAGMENT_WING05.jpg" },
-            { title: "Love Addiction", genre: "アルストロメリア", src: "audio/Love Addiction [f3fHCDNwTng].mp3", image: "images/FRAGMENT_WING05.jpg" },
-            { title: "ダブル・イフェクト", genre: "アルストロメリア", src: "audio/ダブル・イフェクト [qXMig02NZno].mp3", image: "images/GRADATE_WING05.jpg" },
-            { title: "Anniversary", genre: "アルストロメリア", src: "audio/Anniversary [XCBGCg_FTMQ].mp3", image: "images/GRADATE_WING05.jpg" },
-            { title: "パステルカラー パスカラカラー", genre: "アルストロメリア", src: "audio/パステルカラー パスカラカラー [VyzV-6UWq8U].mp3", image: "images/LAYERED_WING05.jpg", start:0.4 },
-            { title: "ラブ・ボナペティート", genre: "アルストロメリア", src: "audio/ラブ・ボナペティート [bkbhnhNVRR0].mp3", image: "images/LAYERED_WING05.jpg" },
-            { title: "VERY BERRY LOVE", genre: "アルストロメリア", src: "audio/VERY BERRY LOVE [Gk-NiBl1rNI].mp3", image: "images/PANORAMA_WING05.jpg" },
-            { title: "Give me some more…", genre: "アルストロメリア", src: "audio/Give me some more... [rjn-4vBvFDI].mp3", image: "images/PANORAMA_WING05.jpg" },
-            { title: "メッセージ", genre: "アルストロメリア", src: "audio/メッセージ [u2KT-KXi9Nw].mp3", image: "images/CANVAS04.jpg" },
-            { title: "Love Letter", genre: "アルストロメリア", src: "audio/Love Letter [jDH6p8QnKms].mp3", image: "images/CANVAS04.jpg" },
-            { title: "グラデーション", genre: "アルストロメリア", src: "audio/グラデーション [cu1_MB4fkeM].mp3", image: "images/CANVAS04.jpg" },
-            { title: "アスタラブビスタ", genre: "アルストロメリア", src: "audio/アスタラブビスタ [of_J-pt-pgc].mp3", image: "images/ECHOES04.jpg" },
-            { title: "DAYDREAM LOVE", genre: "アルストロメリア", src: "audio/DAYDREAM LOVE [jkg10yrznU0].mp3", image: "images/ECHOES04.jpg" },
-            { title: "ルピラ", genre: "アルストロメリア", src: "audio/ルピラ [0z5rCRe9Pdk].mp3", image: "images/円環03.jpg" },
-            { title: "明日もBeautiful Day", genre: "アルストロメリア", src: "audio/明日もBeautiful Day [EO-ypaEW6s4].mp3", image: "images/明日もBeautifulDay.jpg" },
-            { title: "mellow mellow", genre: "アルストロメリア", src: "audio/mellow mellow [dybEycyJ4ZI].mp3", image: "images/メロメロ.jpg", start:0.1 },
-            { title: "Sleepless Nights", genre: "アルストロメリア", src: "audio/Sleepless Nights [2Dmjx6f47oU].mp3", image: "images/シャニソン02.jpg" },
-            { title: "Migratory Echoes (アルスト Ver.)", genre: "アルストロメリア", src: "audio/Migratory Echoes (アルストロメリア Ver.) [_McBSbZiXA4].mp3", image: "images/ECHOES09.jpg", start:1.0 },
-            { title: "With you", genre: "アルストロメリア", src: "audio/With you [s5-6ICR5kAE].mp3", image: "images/OverThePrism.jpg", start:0.2 },
-            { title: "夢咲きAfter school", genre: "放課後クライマックスガールズ", src: "audio/夢咲きAfter school [0ky-ClgtLrM].mp3", image: "images/BRILLIANT_WING04.jpg" },
-            { title: "太陽キッス", genre: "放課後クライマックスガールズ", src: "audio/太陽キッス [TlMKbphvPkE].mp3", image: "images/BRILLIANT_WING04.jpg" },
-            { title: "ビーチブレイバー", genre: "放課後クライマックスガールズ", src: "audio/ビーチブレイバー [BXp0D3gdrrY].mp3", image: "images/FRAGMENT_WING04.jpg" },
-            { title: "よりみちサンセット", genre: "放課後クライマックスガールズ", src: "audio/よりみちサンセット [3-OEAy-Yqzc].mp3", image: "images/FRAGMENT_WING04.jpg" },
-            { title: "五ツ座流星群", genre: "放課後クライマックスガールズ", src: "audio/五ツ座流星群 [3iISh5nQ9ws].mp3", image: "images/GRADATE_WING04.jpg" },
-            { title: "学祭革命夜明け前", genre: "放課後クライマックスガールズ", src: "audio/学祭革命夜明け前 [KKyeKHDA_Rg].mp3", image: "images/GRADATE_WING04.jpg" },
-            { title: "クライマックスアイランド", genre: "放課後クライマックスガールズ", src: "audio/クライマックスアイランド [3JQjFkwVo9Y].mp3", image: "images/LAYERED_WING04.jpg" },
-            { title: "拝啓タイムカプセル", genre: "放課後クライマックスガールズ", src: "audio/拝啓タイムカプセル [aD_jSRh2zHk].mp3", image: "images/LAYERED_WING04.jpg" },
-            { title: "一閃は君が導く", genre: "放課後クライマックスガールズ", src: "audio/一閃は君が導く [5gC1Acs0sq8].mp3", image: "images/PANORAMA_WING04.jpg" },
-            { title: "キャットスクワッド", genre: "放課後クライマックスガールズ", src: "audio/キャットスクワッド [K7rfVTsLBdw].mp3", image: "images/PANORAMA_WING04.jpg", start:0.2 },
-            { title: "ハナサカサイサイ", genre: "放課後クライマックスガールズ", src: "audio/ハナサカサイサイ [YCODUk2zMtc].mp3", image: "images/CANVAS03.jpg", start:0.1 },
-            { title: "全力アンサー", genre: "放課後クライマックスガールズ", src: "audio/全力アンサー [PyJYgXeFHvM].mp3", image: "images/CANVAS03.jpg" },
-            { title: "ひめくりモザイク", genre: "放課後クライマックスガールズ", src: "audio/ひめくりモザイク [bTkqudimYUI].mp3", image: "images/CANVAS03.jpg" },
-            { title: "放課後マギア", genre: "放課後クライマックスガールズ", src: "audio/放課後マギア [hPWqVsQTIf4].mp3", image: "images/ECHOES03.jpg", start:0.4 },
-            { title: "パーティマジックデザイナー", genre: "放課後クライマックスガールズ", src: "audio/パーティーマジックデザイナー [i2bLzPugsn4].mp3", image: "images/ECHOES03.jpg" },
-            { title: "進路は超銀河", genre: "放課後クライマックスガールズ", src: "audio/進路は超銀河 [E8Pyk6KyBao].mp3", image: "images/円環02.jpg" },
-            { title: "裸足じゃイラレナイ", genre: "放課後クライマックスガールズ", src: "audio/裸足じゃイラレナイ [vI6ofjkxpsE].mp3", image: "images/裸足じゃイラレナイ.jpg" },
-            { title: "快盗Vを見逃すな", genre: "放課後クライマックスガールズ", src: "audio/快盗Vを見逃すな [79UOSyf93G8].mp3", image: "images/kaitouV.jpg" },
-            { title: "キラピコ.exe", genre: "放課後クライマックスガールズ", src: "audio/キラピコ.exe [FVFm9vebdSM].mp3", image: "images/シャニソン02.jpg" },
-            { title: "Migratory Echoes (放クラVer.)", genre: "放課後クライマックスガールズ", src: "audio/Migratory Echoes (放課後クライマックスガールズ Ver.) [pbgN3qwq1XY].mp3", image: "images/ECHOES09.jpg", start:0.3 },
-            { title: "さあ舞い上がれ", genre: "放課後クライマックスガールズ", src: "audio/さあ舞い上がれ [9AWm3InRYkU].mp3", image: "images/OverThePrism.jpg" },
-            { title: "乱舞る", genre: "放課後クライマックスガールズ", src: "audio/乱舞る [CHQsfBNN2UU].mp3", image: "images/乱舞る.jpg" },
-            { title: "疾風ザブングル", genre: "放課後クライマックスガールズ", src: "audio/疾風ザブングル [vScTJ37rlso].mp3", image: "images/乱舞る.jpg" },
-            { title: "放っておかないファイヴァーズ", genre: "放課後クライマックスガールズ", src: "audio/放っておかないファイヴァーズ [Z_BpyttvaKI].mp3", image: "images/放っておかない.jpg", start:0.3 },
-            { title: "Wandering Dream Chaser", genre: "ストレイライト", src: "audio/Wandering Dream Chaser [fZkadm6MWic].mp3", image: "images/FRAGMENT_WING06.jpg" },
-            { title: "Transceding The World", genre: "ストレイライト", src: "audio/Transcending The World [tZBGg95hMoM].mp3", image: "images/FRAGMENT_WING06.jpg" },
-            { title: "Hide ＆ Attack", genre: "ストレイライト", src: "audio/Hide & Attack [Fk1NobIWGvg].mp3", image: "images/GRADATE_WING06.jpg", start:0.8 },
-            { title: "Destined Rival", genre: "ストレイライト", src: "audio/Destined Rival [O2Pcd-FnQ0k].mp3", image: "images/GRADATE_WING06.jpg" },
-            { title: "Another Rampage", genre: "ストレイライト", src: "audio/Another Rampage [Q3uzDZ_Gcsg].mp3", image: "images/LAYERED_WING06.jpg" },
-            { title: "Timeless Shooting Star", genre: "ストレイライト", src: "audio/Timeless Shooting Star [qApldtgM_QQ].mp3", image: "images/LAYERED_WING06.jpg" },
-            { title: "Tracing Defender", genre: "ストレイライト", src: "audio/Tracing Defender [AAcw716Wd3w].mp3", image: "images/PANORAMA_WING06.jpg", start:1.0 },
-            { title: "Overdrive Emotion", genre: "ストレイライト", src: "audio/Overdrive Emotion [qJIneWk8sMg].mp3", image: "images/PANORAMA_WING06.jpg" },
-            { title: "Imitaion Ghost", genre: "ストレイライト", src: "audio/Imitation Ghost [T0nLvO4UsVU].mp3", image: "images/CANVAS05.jpg" },
-            { title: "BURN BURN", genre: "ストレイライト", src: "audio/BURN BURN [EgJIM50Bapc].mp3", image: "images/CANVAS05.jpg" },
-            { title: "Start up Stand up", genre: "ストレイライト", src: "audio/Start up Stand up [_1qc7wiRPvw].mp3", image: "images/CANVAS05.jpg" },
-            { title: "Cyber Parkour", genre: "ストレイライト", src: "audio/Cyber Parkour [25Su6jUeLDc].mp3", image: "images/ECHOES05.jpg" },
-            { title: "LIVE LIVE LIVE!", genre: "ストレイライト", src: "audio/LIVE LIVE LIVE! [qqyTvgd8ncA].mp3", image: "images/ECHOES05.jpg" },
-            { title: "GET OVER", genre: "ストレイライト", src: "audio/GET OVER [W9fQvU1mwoY].mp3", image: "images/円環02.jpg", start:0.2 },
-            { title: "LINKS", genre: "ストレイライト", src: "audio/LINKs [ePj_kfBElbo].mp3", image: "images/LINKs.jpg",start:0.2 },
-            { title: "Real Mind Shakes", genre: "ストレイライト", src: "audio/Real Mind Shakes [czQGkBy5NBY].mp3", image: "images/RealMindShakes.jpg" },
-            { title: "Future Transit", genre: "ストレイライト", src: "audio/Future Transit [w2ZMMZhWB1o].mp3", image: "images/シャニソン01.jpg" },
-            { title: "Migratory Echoes (ストレイVer.)", genre: "ストレイライト", src: "audio/Migratory Echoes (ストレイライト Ver.) [D2ZSLboilqw].mp3", image: "images/ECHOES09.jpg", start:2.0 },
-            { title: "Future Designer", genre: "ストレイライト", src: "audio/Future Designer [pKKh7_5n9Og].mp3", image: "images/OverThePrism.jpg" },
-            { title: "One Live One Love", genre: "ストレイライト", src: "audio/One Live One Love [hkB6Dg6btUY].mp3", image: "images/シンギュラリティ.jpg", start:0.8 },
-            { title: "One Live One Love (Mortal Remix)", genre: "ストレイライト", src: "audio/One Live One Love (Mortal Remix) [BzFKHA2BEoc].mp3", image: "images/シンギュラリティ.jpg", start:1.0 },
+            { title: "アルストロメリア", genre: "アルストロメリア", src: "audio/アルストロメリア [dDIeDi-NlGQ].mp3", image: "images/BRILLIANT_WING05.jpg",introShort:1.2, introEnd:29.0, introMid:4.2 },
+            { title: "ハピリリ", genre: "アルストロメリア", src: "audio/ハピリリ [n_synseUdIg].mp3", image: "images/BRILLIANT_WING05.jpg", introEnd:25.0, introMid:5.0 },
+            { title: "Bloomy!", genre: "アルストロメリア", src: "audio/Bloomy! [-NWULtqoal0].mp3", image: "images/FRAGMENT_WING05.jpg",introShort:0.8,introEnd:28.8, introMid:3.5  },
+            { title: "Love Addiction", genre: "アルストロメリア", src: "audio/Love Addiction [f3fHCDNwTng].mp3", image: "images/FRAGMENT_WING05.jpg",introEnd:10.5, introMid:3.0 },
+            { title: "ダブル・イフェクト", genre: "アルストロメリア", src: "audio/ダブル・イフェクト [qXMig02NZno].mp3", image: "images/GRADATE_WING05.jpg",introMid:19.0, introEnd:31.5 },
+            { title: "Anniversary", genre: "アルストロメリア", src: "audio/Anniversary [XCBGCg_FTMQ].mp3", image: "images/GRADATE_WING05.jpg", introEnd:27.0, introMid:7.0 },
+            { title: "パステルカラー パスカラカラー", genre: "アルストロメリア", src: "audio/パステルカラー パスカラカラー [VyzV-6UWq8U].mp3", image: "images/LAYERED_WING05.jpg", start:0.4, introEnd:8.7 },
+            { title: "ラブ・ボナペティート", genre: "アルストロメリア", src: "audio/ラブ・ボナペティート [bkbhnhNVRR0].mp3", image: "images/LAYERED_WING05.jpg" ,introMid:4.3, introEnd:23.4},
+            { title: "VERY BERRY LOVE", genre: "アルストロメリア", src: "audio/VERY BERRY LOVE [Gk-NiBl1rNI].mp3", image: "images/PANORAMA_WING05.jpg", introMid:8.1, introEnd:23.1 },
+            { title: "Give me some more…", genre: "アルストロメリア", src: "audio/Give me some more... [rjn-4vBvFDI].mp3", image: "images/PANORAMA_WING05.jpg", introShort:1.2, introMid:3.4, introEnd:17.1 },
+            { title: "メッセージ", genre: "アルストロメリア", src: "audio/メッセージ [u2KT-KXi9Nw].mp3", image: "images/CANVAS04.jpg", introMid:16.0 ,introEnd:28.2 },
+            { title: "Love Letter", genre: "アルストロメリア", src: "audio/Love Letter [jDH6p8QnKms].mp3", image: "images/CANVAS04.jpg",introEnd:10.6, introMid:3.0 },
+            { title: "グラデーション", genre: "アルストロメリア", src: "audio/グラデーション [cu1_MB4fkeM].mp3", image: "images/CANVAS04.jpg", introEnd:30.0, introMid:2.5 },
+            { title: "アスタラブビスタ", genre: "アルストロメリア", src: "audio/アスタラブビスタ [of_J-pt-pgc].mp3", image: "images/ECHOES04.jpg",introShort:3.8,introEnd:23.8, introMid:9.5  },
+            { title: "DAYDREAM LOVE", genre: "アルストロメリア", src: "audio/DAYDREAM LOVE [jkg10yrznU0].mp3", image: "images/ECHOES04.jpg",start:0.2 ,introEnd:12.5, introMid:3.0},
+            { title: "ルピラ", genre: "アルストロメリア", src: "audio/ルピラ [0z5rCRe9Pdk].mp3", image: "images/円環03.jpg",introShort:1.4, introMid:2.5, introEnd:9.1 },
+            { title: "明日もBeautiful Day", genre: "アルストロメリア", src: "audio/明日もBeautiful Day [EO-ypaEW6s4].mp3", image: "images/明日もBeautifulDay.jpg", introMid:3.0, introEnd:20.5 },
+            { title: "mellow mellow", genre: "アルストロメリア", src: "audio/mellow mellow [dybEycyJ4ZI].mp3", image: "images/メロメロ.jpg", start:0.18, introEnd:28.7, introMid:15.0 },
+            { title: "Sleepless Nights", genre: "アルストロメリア", src: "audio/Sleepless Nights [2Dmjx6f47oU].mp3", image: "images/シャニソン02.jpg",introEnd:17.0, introMid:7.0 },
+            { title: "Migratory Echoes (アルスト Ver.)", genre: "アルストロメリア", src: "audio/Migratory Echoes (アルストロメリア Ver.) [_McBSbZiXA4].mp3", image: "images/ECHOES09.jpg", start:0.9, introMid:3.0, introEnd:6.0 },
+            { title: "With you", genre: "アルストロメリア", src: "audio/With you [s5-6ICR5kAE].mp3", image: "images/OverThePrism.jpg", introShort:1.5, introEnd:17.0, introMid:6.0 },
+            { title: "夢咲きAfter school", genre: "放課後クライマックスガールズ", src: "audio/夢咲きAfter school [0ky-ClgtLrM].mp3", image: "images/BRILLIANT_WING04.jpg", introEnd:18.4, introMid:4.8},
+            { title: "太陽キッス", genre: "放課後クライマックスガールズ", src: "audio/太陽キッス [TlMKbphvPkE].mp3", image: "images/BRILLIANT_WING04.jpg", introShort:1.2, introEnd:34.4, introMid:3.0 },
+            { title: "ビーチブレイバー", genre: "放課後クライマックスガールズ", src: "audio/ビーチブレイバー [BXp0D3gdrrY].mp3", image: "images/FRAGMENT_WING04.jpg" ,introShort:0.8, introMid:4.0, introEnd:17.2},
+            { title: "よりみちサンセット", genre: "放課後クライマックスガールズ", src: "audio/よりみちサンセット [3-OEAy-Yqzc].mp3", image: "images/FRAGMENT_WING04.jpg" ,introEnd:24.3, introMid:8.5, introShort:2.0},
+            { title: "五ツ座流星群", genre: "放課後クライマックスガールズ", src: "audio/五ツ座流星群 [3iISh5nQ9ws].mp3", image: "images/GRADATE_WING04.jpg",introEnd:6.0, introMid:3.0 },
+            { title: "学祭革命夜明け前", genre: "放課後クライマックスガールズ", src: "audio/学祭革命夜明け前 [KKyeKHDA_Rg].mp3", image: "images/GRADATE_WING04.jpg",introEnd:18.5, introMid:6.1 },
+            { title: "クライマックスアイランド", genre: "放課後クライマックスガールズ", src: "audio/クライマックスアイランド [3JQjFkwVo9Y].mp3", image: "images/LAYERED_WING04.jpg",introShort:1.5, introEnd:8.2, introMid:3.0 },
+            { title: "拝啓タイムカプセル", genre: "放課後クライマックスガールズ", src: "audio/拝啓タイムカプセル [aD_jSRh2zHk].mp3", image: "images/LAYERED_WING04.jpg",introShort:2.2, introEnd:17.1, introMid:6.0 },
+            { title: "一閃は君が導く", genre: "放課後クライマックスガールズ", src: "audio/一閃は君が導く [5gC1Acs0sq8].mp3", image: "images/PANORAMA_WING04.jpg", introShort:3.1,introMid:9.0, introEnd:23.3 },
+            { title: "キャットスクワッド", genre: "放課後クライマックスガールズ", src: "audio/キャットスクワッド [K7rfVTsLBdw].mp3", image: "images/PANORAMA_WING04.jpg", introShort:2.2, introMid:7.8, introEnd:14.2},
+            { title: "ハナサカサイサイ", genre: "放課後クライマックスガールズ", src: "audio/ハナサカサイサイ [YCODUk2zMtc].mp3", image: "images/CANVAS03.jpg", introShort:1.3, introEnd:9.8, introMid:3.5 },
+            { title: "全力アンサー", genre: "放課後クライマックスガールズ", src: "audio/全力アンサー [PyJYgXeFHvM].mp3", image: "images/CANVAS03.jpg", introMid:5.8, introEnd:25.4 },
+            { title: "ひめくりモザイク", genre: "放課後クライマックスガールズ", src: "audio/ひめくりモザイク [bTkqudimYUI].mp3", image: "images/CANVAS03.jpg",introShort:1.5, introMid:5.0, introEnd:22.5 },
+            { title: "放課後マギア", genre: "放課後クライマックスガールズ", src: "audio/放課後マギア [hPWqVsQTIf4].mp3", image: "images/ECHOES03.jpg", start:0.4, introShort:1.5,introEnd:23.0, introMid:5.0 },
+            { title: "パーティマジックデザイナー", genre: "放課後クライマックスガールズ", src: "audio/パーティーマジックデザイナー [i2bLzPugsn4].mp3", image: "images/ECHOES03.jpg", introShort:1.8 , introEnd:8.8, introMid:4.0},
+            { title: "進路は超銀河", genre: "放課後クライマックスガールズ", src: "audio/進路は超銀河 [E8Pyk6KyBao].mp3", image: "images/円環02.jpg",introShort:1.8, introEnd:6.0, introMid:4.0 },
+            { title: "裸足じゃイラレナイ", genre: "放課後クライマックスガールズ", src: "audio/裸足じゃイラレナイ [vI6ofjkxpsE].mp3", image: "images/裸足じゃイラレナイ.jpg",introEnd:10.9, introMid:3.3 },
+            { title: "快盗Vを見逃すな", genre: "放課後クライマックスガールズ", src: "audio/快盗Vを見逃すな [79UOSyf93G8].mp3", image: "images/kaitouV.jpg",introMid:3.0, introEnd:5.8 },
+            { title: "キラピコ.exe", genre: "放課後クライマックスガールズ", src: "audio/キラピコ.exe [FVFm9vebdSM].mp3", image: "images/シャニソン02.jpg",introEnd:11.3, introMid:3.0, introShort:1.3 },
+            { title: "Migratory Echoes (放クラVer.)", genre: "放課後クライマックスガールズ", src: "audio/Migratory Echoes (放課後クライマックスガールズ Ver.) [pbgN3qwq1XY].mp3", image: "images/ECHOES09.jpg", introShort:3.2, introMid:6.0, introEnd:16.5 },
+            { title: "さあ舞い上がれ", genre: "放課後クライマックスガールズ", src: "audio/さあ舞い上がれ [9AWm3InRYkU].mp3", image: "images/OverThePrism.jpg",introEnd:12.1, introMid:4.0 },
+            { title: "乱舞る", genre: "放課後クライマックスガールズ", src: "audio/乱舞る [CHQsfBNN2UU].mp3", image: "images/乱舞る.jpg",introMid:13.0, introEnd:25.4 },
+            { title: "疾風ザブングル", genre: "放課後クライマックスガールズ", src: "audio/疾風ザブングル [vScTJ37rlso].mp3", image: "images/乱舞る.jpg", introShort:3.0, introMid:6.8, introEnd:13.1 },
+            { title: "放っておかないファイヴァーズ", genre: "放課後クライマックスガールズ", src: "audio/放っておかないファイヴァーズ [Z_BpyttvaKI].mp3", image: "images/放っておかない.jpg", introShort:1.5, introEnd:20.9, introMid:8.6 },
+            { title: "Wandering Dream Chaser", genre: "ストレイライト", src: "audio/Wandering Dream Chaser [fZkadm6MWic].mp3", image: "images/FRAGMENT_WING06.jpg", introShort:2.0, introEnd:22.9, introMid:4.5 },
+            { title: "Transceding The World", genre: "ストレイライト", src: "audio/Transcending The World [tZBGg95hMoM].mp3", image: "images/FRAGMENT_WING06.jpg", introShort:0.7, introMid:2.3, introEnd:23.5 },
+            { title: "Hide ＆ Attack", genre: "ストレイライト", src: "audio/Hide & Attack [Fk1NobIWGvg].mp3", image: "images/GRADATE_WING06.jpg", introEnd:18.2, introShort:1.8, introMid:11.0 },
+            { title: "Destined Rival", genre: "ストレイライト", src: "audio/Destined Rival [O2Pcd-FnQ0k].mp3", image: "images/GRADATE_WING06.jpg",introEnd:20.2, introShort:3.3, introMid:11.0},
+            { title: "Another Rampage", genre: "ストレイライト", src: "audio/Another Rampage [Q3uzDZ_Gcsg].mp3", image: "images/LAYERED_WING06.jpg", introEnd:23.3, introMid:10.5 },
+            { title: "Timeless Shooting Star", genre: "ストレイライト", src: "audio/Timeless Shooting Star [qApldtgM_QQ].mp3", image: "images/LAYERED_WING06.jpg", introEnd:23.1, introMid:8.0 },
+            { title: "Tracing Defender", genre: "ストレイライト", src: "audio/Tracing Defender [AAcw716Wd3w].mp3", image: "images/PANORAMA_WING06.jpg", introShort:2.9, introEnd:21.8, introMid:4.0 },
+            { title: "Overdrive Emotion", genre: "ストレイライト", src: "audio/Overdrive Emotion [qJIneWk8sMg].mp3", image: "images/PANORAMA_WING06.jpg", introEnd:11.5, introMid:3.5 },
+            { title: "Imitaion Ghost", genre: "ストレイライト", src: "audio/Imitation Ghost [T0nLvO4UsVU].mp3", image: "images/CANVAS05.jpg",introShort:1.2, introEnd:14.0, introMid:3.2 },
+            { title: "BURN BURN", genre: "ストレイライト", src: "audio/BURN BURN [EgJIM50Bapc].mp3", image: "images/CANVAS05.jpg",introEnd:15.0, introMid:7.5 },
+            { title: "Start up Stand up", genre: "ストレイライト", src: "audio/Start up Stand up [_1qc7wiRPvw].mp3", image: "images/CANVAS05.jpg", introEnd:31.5, introMid:10.4, introShort:2.0 },
+            { title: "Cyber Parkour", genre: "ストレイライト", src: "audio/Cyber Parkour [25Su6jUeLDc].mp3", image: "images/ECHOES05.jpg", introEnd:13.5, introMid:5.0},
+            { title: "LIVE LIVE LIVE!", genre: "ストレイライト", src: "audio/LIVE LIVE LIVE! [qqyTvgd8ncA].mp3", image: "images/ECHOES05.jpg",introEnd:27.2, introMid:7.8, introShort:3.5 },
+            { title: "GET OVER", genre: "ストレイライト", src: "audio/GET OVER [W9fQvU1mwoY].mp3", image: "images/円環02.jpg", introShort:2.0, introEnd:29.6, introMid:9.0 },
+            { title: "LINKS", genre: "ストレイライト", src: "audio/LINKs [ePj_kfBElbo].mp3", image: "images/LINKs.jpg",introEnd:32.8, introShort:1.2, introMid:3.3 },
+            { title: "Real Mind Shakes", genre: "ストレイライト", src: "audio/Real Mind Shakes [czQGkBy5NBY].mp3", image: "images/RealMindShakes.jpg",introShort:1.1, introEnd:15.8, introMid:5.5 },
+            { title: "Future Transit", genre: "ストレイライト", src: "audio/Future Transit [w2ZMMZhWB1o].mp3", image: "images/シャニソン01.jpg", introEnd:20.0, introMid:7.0 },
+            { title: "Migratory Echoes (ストレイVer.)", genre: "ストレイライト", src: "audio/Migratory Echoes (ストレイライト Ver.) [D2ZSLboilqw].mp3", image: "images/ECHOES09.jpg", introShort:4.0, introMid:6.0, introEnd:16.0 },
+            { title: "Future Designer", genre: "ストレイライト", src: "audio/Future Designer [pKKh7_5n9Og].mp3", image: "images/OverThePrism.jpg",introEnd:16.0, introShort:1.8, introMid:6.0 },
+            { title: "One Live One Love", genre: "ストレイライト", src: "audio/One Live One Love [hkB6Dg6btUY].mp3", image: "images/シンギュラリティ.jpg", introEnd:18.7, introShort:2.2, introMid:7.2 },
+            { title: "One Live One Love (Mortal Remix)", genre: "ストレイライト", src: "audio/One Live One Love (Mortal Remix) [BzFKHA2BEoc].mp3", image: "images/シンギュラリティ.jpg", introShort:1.9, introMid:10.6, introEnd:63.0 },
             { title: "いつだって僕らは", genre: "ノクチル", src: "audio/いつだって僕らは [sgq2T14EyMo].mp3", image: "images/GRADATE_WING07.jpg", introMid:2.5, introEnd:15.9 },
             { title: "あの花のように", genre: "ノクチル", src: "audio/あの花のように [NaCSpXECH2o].mp3", image: "images/GRADATE_WING07.jpg", introEnd:5.0, shorten:180 },
             { title: "僕らだけの未来の空", genre: "ノクチル", src: "audio/僕らだけの未来の空 [SkQKSCWmRoM].mp3", image: "images/LAYERED_WING07.jpg", introEnd:22.8 },
@@ -607,6 +601,20 @@
 
 
 
+         // ==========================================
+            // 🖼️ 画像プリロード（ジャケ写・アイドル画像の表示ラグ対策）
+            // ==========================================
+            const preloadedImages = new Set(); // 二重にダウンロードしないよう記録
+            function preloadImage(url) {
+                if (!url || preloadedImages.has(url)) return;
+                preloadedImages.add(url);
+                const img = new Image();
+                img.src = url;
+            }
+            function preloadImageList(urls) {
+                (urls || []).forEach(preloadImage);
+            }
+
         function normalizeText(str) {
                 if (!str) return "";
                 // 大文字を小文字に変換
@@ -765,6 +773,21 @@
                 currentQuestions = shuffled.slice(0, maxQuestions);
                 currentQuestionIndex = 0;
                 score = 0;
+
+                // ▼▼ 追加：今回出題される曲のジャケ写と、結果画面で使う可能性のある
+            //          アイドル画像を、ゲーム開始と同時に裏側で先読みしておく ▼▼
+            preloadImageList(currentQuestions.map(song => song.image));
+            if (genreResultData[selectedGenre] && genreResultData[selectedGenre].images) {
+                preloadImageList(genreResultData[selectedGenre].images);
+            } else {
+                for (const key in genreResultData) {
+                    if (genreResultData[key] && genreResultData[key].images) {
+                        preloadImageList(genreResultData[key].images);
+                    }
+                }
+            }
+            preloadImage("images/総合評価.png");
+            // ▲▲ ここまで ▲▲
 
                 showScreen('quiz-screen');
                 updateQuizUI();
@@ -1094,7 +1117,7 @@
             // ▼▼ 追加：トップに戻る時に背景色をデフォルトに戻す ▼▼
             document.body.style.background = "";
 
-            showScreen('start-screen');
+           
         }
 
         // ▼▼ ここから追加 ▼▼
@@ -1115,19 +1138,19 @@
             });
 
 
-            // === ここから追加：画像の先回り読み込み（プリロード） ===
-                window.addEventListener('load', function () {
-                    // 最初のスタート画面が表示されてから1秒後に、全画像を裏側でこっそりダウンロード開始
+            window.addEventListener('load', function () {
                     setTimeout(function () {
                         songDatabase.forEach(function (song) {
-                            if (song.image) {
-                                const preImg = new Image();
-                                preImg.src = song.image;
-                            }
+                            preloadImage(song.image);
                         });
+                        for (const key in genreResultData) {
+                            if (genreResultData[key] && genreResultData[key].images) {
+                                preloadImageList(genreResultData[key].images);
+                            }
+                        }
+                        preloadImage("images/総合評価.png");
                     }, 1000);
                 });
-                // === ここまで追加 ===
 
 
 
