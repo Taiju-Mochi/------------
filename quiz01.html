@@ -46,9 +46,6 @@
             /* ★ 全体の基本文字サイズを大きくしました */
         }
 
-        .screen.active {
-            display: block;
-        }
 
         .screen.active {
             display: block;
@@ -107,6 +104,16 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
 
+        /* ▼▼ 追加：難易度ボタンが選択されている時のデザイン ▼▼ */
+        .level-btn.active {
+            background: #ff7e67 !important;
+            /* 目立つコーラルオレンジ */
+            color: #ffffff !important;
+            border: 1px solid #ff7e67 !important;
+            box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.2) !important;
+            text-shadow: none !important;
+        }
+
         /* セレクトボックス（入力欄）のデザイン */
         select:not(.select2-hidden-accessible) {
             padding: 10px;
@@ -123,9 +130,7 @@
             width: 80%;
         }
 
-        .dropdown-group {
-            margin-bottom: 15px;
-        }
+
 
         /* Select2（検索プルダウン）のジャンル見出し折りたたみ用 */
         .select2-results__group {
@@ -146,6 +151,21 @@
             font-size: 12px;
             float: right;
             color: #666;
+        }
+
+        /* ▼▼ 追加：複数選択（カスタムモード等）の文字見切れ修正 ▼▼ */
+        .select2-container .select2-search--inline .select2-search__field {
+            height: auto !important;
+            line-height: 0.8 !important;
+            padding-top: 0px !important;
+        }
+
+        .select2-container--default .select2-selection--multiple {
+            min-height: 30px !important;
+            padding: 2px 6px !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            background: rgba(255, 255, 255, 0.8) !important;
         }
 
         /* スマホ画面用の調整（画面幅が600px以下の時だけ適用） */
@@ -172,11 +192,6 @@
                     0px 3px 5px rgba(0, 0, 0, 0.3);
             }
 
-            /* ▼▼ 追加：結果画面のテキストを絶対に途中で改行させない ▼▼ */
-            #rank-text {
-                white-space: nowrap;
-                font-size: 15px !important;
-            }
         }
     </style>
 </head>
@@ -206,6 +221,19 @@
         </div>
         <button class="btn" onclick="startGame()"
             style="background-color: #28a745; color: white; border: none; width: 100%;">ゲーム開始</button>
+
+        <!-- ▼▼ ここからカスタムモード用のUIを追加 ▼▼ -->
+        <hr style="border: 1px solid rgba(255,255,255,0.5); margin: 30px 0 20px 0;">
+        <h3 style="text-align: center;">🎨 カスタムモード</h3>
+        <div class="settings">
+            <label>好きな曲を選んで遊ぶ (複数可):</label><br>
+            <select id="custom-song-select" multiple="multiple">
+                <!-- JavaScriptで全曲追加されます -->
+            </select>
+        </div>
+        <button class="btn" onclick="startCustomGame()"
+            style="background-color: #ff9800; color: white; border: none; width: 100%;">選択した曲でゲーム開始</button>
+
     </div>
 
     <!-- 2. クイズ画面 -->
@@ -213,13 +241,18 @@
         <h2 id="quiz-status">第 1 問</h2>
 
         <div class="settings">
-            <label>難易度 (再生時間):
-                <select id="quiz-level" onchange="resetTimer()">
-                    <option value="3000">レベル1 (3秒)</option>
-                    <option value="2000">レベル2 (2秒)</option>
-                    <option value="1000">レベル3 (1秒)</option>
-                </select>
-            </label>
+            <label style="display: block; text-align: center; margin-bottom: 10px; font-weight: bold;">難易度</label>
+            <div style="display: flex; justify-content: space-between; gap: 10px;">
+                <!-- ▼ レベル3の data-value の数字(1000)は現在の設定に合わせてください ▼ -->
+                <button class="btn level-btn active" data-value="1000" onclick="selectLevel(this)"
+                    style="flex: 1; padding: 10px 2px; font-size: 15px; margin: 0;">レベル3</button>
+                <button class="btn level-btn" data-value="mid_intro" onclick="selectLevel(this)"
+                    style="flex: 1; padding: 10px 2px; font-size: 15px; margin: 0;">レベル2</button>
+                <button class="btn level-btn" data-value="intro" onclick="selectLevel(this)"
+                    style="flex: 1; padding: 10px 2px; font-size: 15px; margin: 0;">レベル1</button>
+            </div>
+            <!-- 裏でタイマー計算に使うための隠し項目（初期値はレベル3の値） -->
+            <input type="hidden" id="quiz-level" value="1000">
         </div>
         <button id="quiz-play-btn" class="btn" onclick="toggleQuizAudio()" style="display: block; margin: 0 auto;">▶
             曲を再生する</button>
@@ -274,7 +307,6 @@
                     <span style="font-size: 32px; font-weight: bold; color: #555; margin: 0 5px;">/</span>
                     <span id="score-denominator" style="font-size: 32px; font-weight: bold; color: #555;">0</span>
                 </div>
-                <h3 id="rank-text" style="color: #ff3b30; margin-top: 10px; font-size: 18px;"></h3>
             </div>
 
             <!-- 右側：アイドル画像 -->
@@ -287,8 +319,8 @@
 
         <!-- 間違えた曲リスト -->
         <div id="review-area"
-            style="display: none; background: rgba(255,255,255,0.5); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <h4 style="margin-top: 0; color: #333;">間違えた曲リスト (復習)</h4>
+            style="display: none; background: rgba(255,255,255,0.5); padding: 15px; border-radius: 8px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
+            <h4 style="margin-top: 0; color: #333;">リザルト</h4>
             <ul id="wrong-songs-list" style="text-align: left; margin: 0; padding-left: 20px; color: #555;"></ul>
         </div>
 
@@ -301,252 +333,252 @@
         // 🎵 曲データの定義 (250曲のデータをここに貼り付け)
         // ==========================================
         const songDatabase = [
-            { title: "ヒカリのdestination", genre: "イルミネーションスターズ", src: "audio/ヒカリのdestination [SeNiJ-4azcY].webm", image: "images/BRILLI@NT_WING02.jpg" },
-            { title: "虹になれ", genre: "イルミネーションスターズ", src: "audio/虹になれ [tOVnK7fnKek].flac", image: "images/BRILLI@NT_WING02.jpg" },
-            { title: "We can go now!", genre: "イルミネーションスターズ", src: "audio/We can go now! [nTkMCLcRb1g].flac", image: "images/FRAGMENT_WING02.jpg" },
-            { title: "トライアングル", genre: "イルミネーションスターズ", src: "audio/トライアングル [lcwu-Vcw9Js].flac", image: "images/FRAGMENT_WING02.jpg" },
-            { title: "Twinkle way", genre: "イルミネーションスターズ", src: "audio/Twinkle way [SdY0kWK1RPg].flac", image: "images/GRADATE_WING02.jpg" },
-            { title: "Happy Funny Lucky", genre: "イルミネーションスターズ", src: "audio/Happy Funny Lucky [uMY_qIoWgnk].flac", image: "images/GRADATE_WING02.jpg", start: 3.0 },
-            { title: "PRISISM", genre: "イルミネーションスターズ", src: "audio/PRISISM [eBudCFyDKQg].flac", image: "images/LAYERED_WING02.jpg" },
-            { title: "スマイルシンフォニア", genre: "イルミネーションスターズ", src: "audio/スマイルシンフォニア [tr_leWHLafc].flac", image: "images/LAYERED_WING02.jpg" },
-            { title: "FELICE", genre: "イルミネーションスターズ", src: "audio/FELICE [6SP2DOCIjqY].flac", image: "images/PANORAMA_WING02.jpg" },
-            { title: "イルミネイトコンサート", genre: "イルミネーションスターズ", src: "audio/イルミネイトコンサート [6-OZG6vJj3w].flac", image: "images/PANORAMA_WING02.jpg" },
-            { title: "Forward March!!!", genre: "イルミネーションスターズ", src: "audio/Forward March！！！ [TGn7lPFIe2Y].flac", image: "images/CANVAS01.jpg" },
-            { title: "星が流れて", genre: "イルミネーションスターズ", src: "audio/星が流れて [XmkQ20Z_Iqg].flac", image: "images/CANVAS01.jpg" },
-            { title: "BRIGHTEST WHITE", genre: "イルミネーションスターズ", src: "audio/BRIGHTEST WHITE [CSLJHEJYmXo].flac", image: "images/CANVAS01.jpg" },
-            { title: "STARRY PLACE", genre: "イルミネーションスターズ", src: "audio/STARRY PLACE [rMgvrDhK2qk].flac", image: "images/ECHOES01.jpg" },
-            { title: "晴れのちバルーン", genre: "イルミネーションスターズ", src: "audio/晴れのちバルーン [PiW46jydnkI].flac", image: "images/ECHOES01.jpg" },
-            { title: "REWRITING", genre: "イルミネーションスターズ", src: "audio/REWRITING [XLGlodKH7qM].flac", image: "images/円環04.jpg" },
-            { title: "枕木の歌", genre: "イルミネーションスターズ", src: "audio/枕木の歌 [RMG1LKVzdZU].flac", image: "images/枕木.jpg" },
-            { title: "Shower of light", genre: "イルミネーションスターズ", src: "audio/Shower of light [rG_LKd8gLco].flac", image: "images/ShowerofLight.jpg" },
-            { title: "KoiKyun!", genre: "イルミネーションスターズ", src: "audio/KoiKyun！ [qCCKttskgq8].flac", image: "images/シャニソン01.jpg" },
-            { title: "Migratory Echoes (イルミネ Ver.)", genre: "イルミネーションスターズ", src: "audio/Migratory Echoes (イルミネーションスターズ Ver.) [s7YvGjutETI].flac", image: "images/ECHOES09.jpg" },
-            { title: "星の数だけ", genre: "イルミネーションスターズ", src: "audio/星の数だけ [mXiNijnEnjo].flac", image: "images/OverThePrism.jpg" },
-            { title: "バベルシティ・グレイス", genre: "アンティーカ", src: "audio/バベルシティ・グレイス (2023 Ver.) [cPh82K-yMl0].flac", image: "images/BRILLI@NT_WING03.jpg" },
-            { title: "幻惑SILHOUETTE", genre: "アンティーカ", src: "audio/幻惑SILHOUETTE (2023 Ver.) [4LznTKY7XdA].flac", image: "images/BRILLI@NT_WING03.jpg" },
-            { title: "NEO THEORY FANTASY", genre: "アンティーカ", src: "audio/NEO THEORY FANTASY (2023 Ver.) [jLoeLOvPSY0].flac", image: "images/FRAGMENT_WING03.jpg" },
-            { title: "ラビリンス・レジスタンス", genre: "アンティーカ", src: "audio/ラビリンス・レジスタンス (2023 Ver.) [FYCvW_4Lqb0].flac", image: "images/FRAGMENT_WING03.jpg" },
-            { title: "Black Reverie", genre: "アンティーカ", src: "audio/Black Reverie (2023 Ver.) [-zif1Q4fAIw].flac", image: "images/GRADATE_WING03.jpg" },
-            { title: "純白トロイメライ", genre: "アンティーカ", src: "audio/純白トロイメライ (2023 Ver.) [nGIe0kr1r5Y].flac", image: "images/GRADATE_WING03.jpg" },
-            { title: "abyss of conflict", genre: "アンティーカ", src: "audio/abyss of conflict (2023 Ver.) [BeSsPrA2BA4].flac", image: "images/LAYERED_WING03.jpg" },
-            { title: "革命進化論", genre: "アンティーカ", src: "audio/革命進化論 (2023 Ver.) [5JkqSOrkLPc].flac", image: "images/LAYERED_WING03.jpg" },
-            { title: "浮動性イノセンス", genre: "アンティーカ", src: "audio/浮動性イノセンス [288td1ES8So].flac", image: "images/PANORAMA_WING03.jpg" },
-            { title: "愚者の独白", genre: "アンティーカ", src: "audio/愚者の独白 [31tL35yYFrY].flac", image: "images/PANORAMA_WING03.jpg" },
-            { title: "とある英雄たちの物語", genre: "アンティーカ", src: "audio/とある英雄たちの物語 [X3G6sqNjqgc].flac", image: "images/CANVAS02.jpg" },
-            { title: "Unsung Heroes", genre: "アンティーカ", src: "audio/Unsung Heroes [U5JkNmBaYS8].flac", image: "images/CANVAS02.jpg" },
-            { title: "有彩色ユリイカ", genre: "アンティーカ", src: "audio/有彩色ユリイカ [mBQ17J-Nd4Q].flac", image: "images/CANVAS02.jpg" },
-            { title: "文明開花輪舞-シティ・ハレルヤ-", genre: "アンティーカ", src: "audio/文明開花輪舞 -シティ・ハレルヤ- [MdHyGhj6MYI].flac", image: "images/ECHOES02.jpg" },
-            { title: "秋の終わり、僕の記憶", genre: "アンティーカ", src: "audio/秋の終わり、僕の記憶 [uKWT5M74fyw].flac", image: "images/ECHOES02.jpg" },
-            { title: "ブレイク・アウト・セレンディピティ", genre: "アンティーカ", src: "audio/ブレイク・アウト・セレンディピティ [lHAfNSFvYB0].flac", image: "images/円環01.jpg" },
-            { title: "時限式狂騒ワンダーランド", genre: "アンティーカ", src: "audio/時限式狂騒ワンダーランド [QYt37kJTook].flac", image: "images/時限式.jpg" },
-            { title: "THE LAST PRIDE", genre: "アンティーカ", src: "audio/THE LAST PRIDE [VDnxOtz1chc].flac", image: "images/TheLasrPride.jpg" },
-            { title: "QUEEN OF THE PIRATES", genre: "アンティーカ", src: "audio/QUEEN OF THE PIRATES [26_djZAVfs8].flac", image: "images/シャニソン02.jpg" },
-            { title: "Migratory Echoes (アンティーカ Ver.)", genre: "アンティーカ", src: "audio/Migratory Echoes (アンティーカ Ver.) [9DlhCn_SuCg].flac", image: "images/ECHOES09.jpg" },
-            { title: "橙より未来", genre: "アンティーカ", src: "audio/橙より未来 [-qGFQYouceo].flac", image: "images/OverThePrism.jpg" },
-            { title: "銀翼のアレジアンス -blade of truth-", genre: "アンティーカ", src: "audio/銀翼のアレジアンス -blade of truth- [HcW46eyL2-0].flac", image: "images/騎士団のヴェール.jpg" },
-            { title: "運命前夜", genre: "アンティーカ", src: "audio/運命前夜 [jhMpX8qBzsE].flac", image: "images/騎士団のヴェール.jpg" },
-            { title: "銀翼のアヴニール -become the brave-", genre: "アンティーカ", src: "audio/銀翼のアヴニール -become the brave- [NDK9ryJVNiA].flac", image: "images/騎士団のヴェール.jpg" },
-            { title: "アルストロメリア", genre: "アルストロメリア", src: "audio/アルストロメリア [dDIeDi-NlGQ].flac", image: "images/BRILLIANT_WING05.jpg" },
-            { title: "ハピリリ", genre: "アルストロメリア", src: "audio/ハピリリ [n_synseUdIg].flac", image: "images/BRILLIANT_WING05.jpg" },
-            { title: "Bloomy!", genre: "アルストロメリア", src: "audio/Bloomy! [-NWULtqoal0].flac", image: "images/FRAGMENT_WING05.jpg" },
-            { title: "Love Addiction", genre: "アルストロメリア", src: "audio/Love Addiction [f3fHCDNwTng].flac", image: "images/FRAGMENT_WING05.jpg" },
-            { title: "ダブル・イフェクト", genre: "アルストロメリア", src: "audio/ダブル・イフェクト [qXMig02NZno].flac", image: "images/GRADATE_WING05.jpg" },
-            { title: "Anniversary", genre: "アルストロメリア", src: "audio/Anniversary [XCBGCg_FTMQ].flac", image: "images/GRADATE_WING05.jpg" },
-            { title: "パステルカラー パスカラカラー", genre: "アルストロメリア", src: "audio/パステルカラー パスカラカラー [VyzV-6UWq8U].flac", image: "images/LAYERED_WING05.jpg" },
-            { title: "ラブ・ボナペティート", genre: "アルストロメリア", src: "audio/ラブ・ボナペティート [bkbhnhNVRR0].flac", image: "images/LAYERED_WING05.jpg" },
-            { title: "VERY BERRY LOVE", genre: "アルストロメリア", src: "audio/VERY BERRY LOVE [Gk-NiBl1rNI].flac", image: "images/PANORAMA_WING05.jpg" },
-            { title: "Give me some more…", genre: "アルストロメリア", src: "audio/Give me some more... [rjn-4vBvFDI].flac", image: "images/PANORAMA_WING05.jpg" },
-            { title: "メッセージ", genre: "アルストロメリア", src: "audio/メッセージ [u2KT-KXi9Nw].flac", image: "images/CANVAS04.jpg" },
-            { title: "Love Letter", genre: "アルストロメリア", src: "audio/Love Letter [jDH6p8QnKms].flac", image: "images/CANVAS04.jpg" },
-            { title: "グラデーション", genre: "アルストロメリア", src: "audio/グラデーション [cu1_MB4fkeM].flac", image: "images/CANVAS04.jpg" },
-            { title: "アスタラブビスタ", genre: "アルストロメリア", src: "audio/アスタラブビスタ [of_J-pt-pgc].flac", image: "images/ECHOES04.jpg" },
-            { title: "DAYDREAM LOVE", genre: "アルストロメリア", src: "audio/DAYDREAM LOVE [jkg10yrznU0].flac", image: "images/ECHOES04.jpg" },
-            { title: "ルピラ", genre: "アルストロメリア", src: "audio/ルピラ [0z5rCRe9Pdk].flac", image: "images/円環03.jpg" },
-            { title: "明日もBeautiful Day", genre: "アルストロメリア", src: "audio/明日もBeautiful Day [EO-ypaEW6s4].flac", image: "images/明日もBeautifulDay.jpg" },
-            { title: "mellow mellow", genre: "アルストロメリア", src: "audio/mellow mellow [dybEycyJ4ZI].flac", image: "images/メロメロ.jpg" },
-            { title: "Sleepless Nights", genre: "アルストロメリア", src: "audio/Sleepless Nights [2Dmjx6f47oU].flac", image: "images/シャニソン02.jpg" },
-            { title: "Migratory Echoes (アルスト Ver.)", genre: "アルストロメリア", src: "audio/Migratory Echoes (アルストロメリア Ver.) [_McBSbZiXA4].flac", image: "images/ECHOES09.jpg" },
-            { title: "With you", genre: "アルストロメリア", src: "audio/With you [s5-6ICR5kAE].flac", image: "images/OverThePrism.jpg" },
-            { title: "夢咲きAfter school", genre: "放課後クライマックスガールズ", src: "audio/夢咲きAfter school [0ky-ClgtLrM].flac", image: "images/BRILLIANT_WING04.jpg" },
-            { title: "太陽キッス", genre: "放課後クライマックスガールズ", src: "audio/太陽キッス [TlMKbphvPkE].flac", image: "images/BRILLIANT_WING04.jpg" },
-            { title: "ビーチブレイバー", genre: "放課後クライマックスガールズ", src: "audio/ビーチブレイバー [BXp0D3gdrrY].flac", image: "images/FRAGMENT_WING04.jpg" },
-            { title: "よりみちサンセット", genre: "放課後クライマックスガールズ", src: "audio/よりみちサンセット [3-OEAy-Yqzc].flac", image: "images/FRAGMENT_WING04.jpg" },
-            { title: "五ツ座流星群", genre: "放課後クライマックスガールズ", src: "audio/五ツ座流星群 [3iISh5nQ9ws].flac", image: "images/GRADATE_WING04.jpg" },
-            { title: "学祭革命夜明け前", genre: "放課後クライマックスガールズ", src: "audio/学祭革命夜明け前 [KKyeKHDA_Rg].flac", image: "images/GRADATE_WING04.jpg" },
-            { title: "クライマックスアイランド", genre: "放課後クライマックスガールズ", src: "audio/クライマックスアイランド [3JQjFkwVo9Y].flac", image: "images/LAYERED_WING04.jpg" },
-            { title: "拝啓タイムカプセル", genre: "放課後クライマックスガールズ", src: "audio/拝啓タイムカプセル [aD_jSRh2zHk].flac", image: "images/LAYERED_WING04.jpg" },
-            { title: "一閃は君が導く", genre: "放課後クライマックスガールズ", src: "audio/一閃は君が導く [5gC1Acs0sq8].flac", image: "images/PANORAMA_WING04.jpg" },
-            { title: "キャットスクワッド", genre: "放課後クライマックスガールズ", src: "audio/キャットスクワッド [K7rfVTsLBdw].flac", image: "images/PANORAMA_WING04.jpg" },
-            { title: "ハナサカサイサイ", genre: "放課後クライマックスガールズ", src: "audio/ハナサカサイサイ [YCODUk2zMtc].flac", image: "images/CANVAS03.jpg" },
-            { title: "全力アンサー", genre: "放課後クライマックスガールズ", src: "audio/全力アンサー [PyJYgXeFHvM].flac", image: "images/CANVAS03.jpg" },
-            { title: "ひめくりモザイク", genre: "放課後クライマックスガールズ", src: "audio/ひめくりモザイク [bTkqudimYUI].flac", image: "images/CANVAS03.jpg" },
-            { title: "放課後マギア", genre: "放課後クライマックスガールズ", src: "audio/放課後マギア [hPWqVsQTIf4].flac", image: "images/ECHOES03.jpg" },
-            { title: "パーティマジックデザイナー", genre: "放課後クライマックスガールズ", src: "audio/パーティーマジックデザイナー [i2bLzPugsn4].flac", image: "images/ECHOES03.jpg" },
-            { title: "進路は超銀河", genre: "放課後クライマックスガールズ", src: "audio/進路は超銀河 [E8Pyk6KyBao].flac", image: "images/円環02.jpg" },
-            { title: "裸足じゃイラレナイ", genre: "放課後クライマックスガールズ", src: "audio/裸足じゃイラレナイ [vI6ofjkxpsE].flac", image: "images/裸足じゃイラレナイ.jpg" },
-            { title: "快盗Vを見逃すな", genre: "放課後クライマックスガールズ", src: "audio/快盗Vを見逃すな [79UOSyf93G8].flac", image: "images/kaitouV.jpg" },
-            { title: "キラピコ.exe", genre: "放課後クライマックスガールズ", src: "audio/キラピコ.exe [FVFm9vebdSM].flac", image: "images/シャニソン02.jpg" },
-            { title: "Migratory Echoes (放クラVer.)", genre: "放課後クライマックスガールズ", src: "audio/Migratory Echoes (放課後クライマックスガールズ Ver.) [pbgN3qwq1XY].flac", image: "images/ECHOES09.jpg" },
-            { title: "さあ舞い上がれ", genre: "放課後クライマックスガールズ", src: "audio/さあ舞い上がれ [9AWm3InRYkU].flac", image: "images/OverThePrism.jpg" },
-            { title: "乱舞る", genre: "放課後クライマックスガールズ", src: "audio/乱舞る [CHQsfBNN2UU].flac", image: "images/乱舞る.jpg" },
-            { title: "疾風ザブングル", genre: "放課後クライマックスガールズ", src: "audio/疾風ザブングル [vScTJ37rlso].flac", image: "images/乱舞る.jpg" },
-            { title: "放っておかないファイヴァーズ", genre: "放課後クライマックスガールズ", src: "audio/放っておかないファイヴァーズ [Z_BpyttvaKI].flac", image: "images/放っておかない.jpg" },
-            { title: "Wandering Dream Chaser", genre: "ストレイライト", src: "audio/Wandering Dream Chaser [fZkadm6MWic].flac", image: "images/FRAGMENT_WING06.jpg" },
-            { title: "Transceding The World", genre: "ストレイライト", src: "audio/Transcending The World [tZBGg95hMoM].flac", image: "images/FRAGMENT_WING06.jpg" },
-            { title: "Hide ＆ Attack", genre: "ストレイライト", src: "audio/Hide & Attack [Fk1NobIWGvg].flac", image: "images/GRADATE_WING06.jpg" },
-            { title: "Destined Rival", genre: "ストレイライト", src: "audio/Destined Rival [O2Pcd-FnQ0k].flac", image: "images/GRADATE_WING06.jpg" },
-            { title: "Another Rampage", genre: "ストレイライト", src: "audio/Another Rampage [Q3uzDZ_Gcsg].flac", image: "images/LAYERED_WING06.jpg" },
-            { title: "Timeless Shooting Star", genre: "ストレイライト", src: "audio/Timeless Shooting Star [qApldtgM_QQ].flac", image: "images/LAYERED_WING06.jpg" },
-            { title: "Tracing Defender", genre: "ストレイライト", src: "audio/Tracing Defender [AAcw716Wd3w].flac", image: "images/PANORAMA_WING06.jpg" },
-            { title: "Overdrive Emotion", genre: "ストレイライト", src: "audio/Overdrive Emotion [qJIneWk8sMg].flac", image: "images/PANORAMA_WING06.jpg" },
-            { title: "Imitaion Ghost", genre: "ストレイライト", src: "audio/Imitation Ghost [T0nLvO4UsVU].flac", image: "images/CANVAS05.jpg" },
-            { title: "BURN BURN", genre: "ストレイライト", src: "audio/BURN BURN [EgJIM50Bapc].flac", image: "images/CANVAS05.jpg" },
-            { title: "Start up Stand up", genre: "ストレイライト", src: "audio/Start up Stand up [_1qc7wiRPvw].flac", image: "images/CANVAS05.jpg" },
-            { title: "Cyber Parkour", genre: "ストレイライト", src: "audio/Cyber Parkour [25Su6jUeLDc].flac", image: "images/ECHOES05.jpg" },
-            { title: "LIVE LIVE LIVE!", genre: "ストレイライト", src: "audio/LIVE LIVE LIVE! [qqyTvgd8ncA].flac", image: "images/ECHOES05.jpg" },
-            { title: "GET OVER", genre: "ストレイライト", src: "audio/GET OVER [W9fQvU1mwoY].flac", image: "images/円環02.jpg" },
-            { title: "LINKS", genre: "ストレイライト", src: "audio/LINKs [ePj_kfBElbo].flac", image: "images/LINKs.jpg" },
-            { title: "Real Mind Shakes", genre: "ストレイライト", src: "audio/Real Mind Shakes [czQGkBy5NBY].flac", image: "images/RealMindShakes.jpg" },
-            { title: "Future Transit", genre: "ストレイライト", src: "audio/Future Transit [w2ZMMZhWB1o].flac", image: "images/シャニソン01.jpg" },
-            { title: "Migratory Echoes (ストレイVer.)", genre: "ストレイライト", src: "audio/Migratory Echoes (ストレイライト Ver.) [D2ZSLboilqw].flac", image: "images/ECHOES09.jpg" },
-            { title: "Future Designer", genre: "ストレイライト", src: "audio/Future Designer [pKKh7_5n9Og].flac", image: "images/OverThePrism.jpg" },
-            { title: "One Live One Love", genre: "ストレイライト", src: "audio/One Live One Love [hkB6Dg6btUY].flac", image: "images/シンギュラリティ.jpg" },
-            { title: "One Live One Love (Mortal Remix)", genre: "ストレイライト", src: "audio/One Live One Love (Mortal Remix) [BzFKHA2BEoc].flac", image: "images/シンギュラリティ.jpg" },
-            { title: "いつだって僕らは", genre: "ノクチル", src: "audio/いつだって僕らは [sgq2T14EyMo].flac", image: "images/GRADATE_WING07.jpg" },
-            { title: "あの花のように", genre: "ノクチル", src: "audio/あの花のように [NaCSpXECH2o].flac", image: "images/GRADATE_WING07.jpg" },
-            { title: "僕らだけの未来の空", genre: "ノクチル", src: "audio/僕らだけの未来の空 [SkQKSCWmRoM].flac", image: "images/LAYERED_WING07.jpg" },
-            { title: "今しかない瞬間を", genre: "ノクチル", src: "audio/今しかない瞬間を [CC2KWXZtzVc].flac", image: "images/LAYERED_WING07.jpg" },
-            { title: "Catch the Breeze", genre: "ノクチル", src: "audio/Catch the Breeze [D8Jv1we451E].flac", image: "images/PANORAMA_WING07.jpg" },
-            { title: "アスファルトを鳴らして", genre: "ノクチル", src: "audio/アスファルトを鳴らして [BvMOtJr56vA].flac", image: "images/PANORAMA_WING07.jpg" },
-            { title: "Reflection", genre: "ノクチル", src: "audio/Reflection [1L3D6oRnT6k].flac", image: "images/CANVAS06.jpg" },
-            { title: "夢が夢じゃなくなるその日まで", genre: "ノクチル", src: "audio/夢が夢じゃなくなるその日まで [X3L0XntjcYM].flac", image: "images/CANVAS06.jpg" },
-            { title: "青とオレンジ", genre: "ノクチル", src: "audio/青とオレンジ [9y9nt5y9LJ8].flac", image: "images/CANVAS06.jpg" },
-            { title: "いつかのキミへ", genre: "ノクチル", src: "audio/いつかのキミへ [y2VturCh4PI].flac", image: "images/ECHOES06.jpg" },
+            { title: "ヒカリのdestination", genre: "イルミネーションスターズ", src: "audio/ヒカリのdestination [SeNiJ-4azcY].webm", image: "images/BRILLI@NT_WING02.jpg", start: 0.08 },
+            { title: "虹になれ", genre: "イルミネーションスターズ", src: "audio/虹になれ [tOVnK7fnKek].flac", image: "images/BRILLI@NT_WING02.jpg", introEnd: 11.0 },
+            { title: "We can go now!", genre: "イルミネーションスターズ", src: "audio/We can go now! [nTkMCLcRb1g].flac", image: "images/FRAGMENT_WING02.jpg", introEnd: 16.0, shorten: 200 },
+            { title: "トライアングル", genre: "イルミネーションスターズ", src: "audio/トライアングル [lcwu-Vcw9Js].flac", image: "images/FRAGMENT_WING02.jpg", introEnd: 17.0, introMid: 3.0 },
+            { title: "Twinkle way", genre: "イルミネーションスターズ", src: "audio/Twinkle way [SdY0kWK1RPg].flac", image: "images/GRADATE_WING02.jpg", introMid: 4.2, introEnd: 16.4 },
+            { title: "Happy Funny Lucky", genre: "イルミネーションスターズ", src: "audio/Happy Funny Lucky [uMY_qIoWgnk].flac", image: "images/GRADATE_WING02.jpg", start: 3.0, introMid: 4.5, introEnd: 25.3 },
+            { title: "PRISISM", genre: "イルミネーションスターズ", src: "audio/PRISISM [eBudCFyDKQg].flac", image: "images/LAYERED_WING02.jpg", start: 0.3 },
+            { title: "スマイルシンフォニア", genre: "イルミネーションスターズ", src: "audio/スマイルシンフォニア [tr_leWHLafc].flac", image: "images/LAYERED_WING02.jpg", start: 0.18 },
+            { title: "FELICE", genre: "イルミネーションスターズ", src: "audio/FELICE [6SP2DOCIjqY].flac", image: "images/PANORAMA_WING02.jpg", introEnd: 14.2, introMid: 7.0 },
+            { title: "イルミネイトコンサート", genre: "イルミネーションスターズ", src: "audio/イルミネイトコンサート [6-OZG6vJj3w].flac", image: "images/PANORAMA_WING02.jpg", introEnd: 22.8, introMid: 3.0 },
+            { title: "Forward March!!!", genre: "イルミネーションスターズ", src: "audio/Forward March！！！ [TGn7lPFIe2Y].flac", image: "images/CANVAS01.jpg", introEnd: 22.2, introMid: 6.8 },
+            { title: "星が流れて", genre: "イルミネーションスターズ", src: "audio/星が流れて [XmkQ20Z_Iqg].flac", image: "images/CANVAS01.jpg", introEnd: 24.2, introMid: 6.0 },
+            { title: "BRIGHTEST WHITE", genre: "イルミネーションスターズ", src: "audio/BRIGHTEST WHITE [CSLJHEJYmXo].flac", image: "images/CANVAS01.jpg", introEnd: 17.6, introMid: 7.0 },
+            { title: "STARRY PLACE", genre: "イルミネーションスターズ", src: "audio/STARRY PLACE [rMgvrDhK2qk].flac", image: "images/ECHOES01.jpg", introShort: 3.0, introMid: 8.2, introEnd: 24.7 },
+            { title: "晴れのちバルーン", genre: "イルミネーションスターズ", src: "audio/晴れのちバルーン [PiW46jydnkI].flac", image: "images/ECHOES01.jpg", introEnd: 11.8, introMid: 6.0 },
+            { title: "REWRITING", genre: "イルミネーションスターズ", src: "audio/REWRITING [XLGlodKH7qM].flac", image: "images/円環04.jpg", introEnd: 28.2 },
+            { title: "枕木の歌", genre: "イルミネーションスターズ", src: "audio/枕木の歌 [RMG1LKVzdZU].flac", image: "images/枕木.jpg", introMid: 5.0, introEnd: 23.1 },
+            { title: "Shower of light", genre: "イルミネーションスターズ", src: "audio/Shower of light [rG_LKd8gLco].flac", image: "images/ShowerofLight.jpg", introEnd: 23.6, introMid: 5.6 },
+            { title: "KoiKyun!", genre: "イルミネーションスターズ", src: "audio/KoiKyun！ [qCCKttskgq8].flac", image: "images/シャニソン01.jpg", introMid: 5.0, introEnd: 11.0 },
+            { title: "Migratory Echoes (イルミネ Ver.)", genre: "イルミネーションスターズ", src: "audio/Migratory Echoes (イルミネーションスターズ Ver.) [s7YvGjutETI].flac", image: "images/ECHOES09.jpg", start: 0.85 },
+            { title: "星の数だけ", genre: "イルミネーションスターズ", src: "audio/星の数だけ [mXiNijnEnjo].flac", image: "images/OverThePrism.jpg", introEnd: 31.2 },
+            { title: "バベルシティ・グレイス", genre: "アンティーカ", src: "audio/バベルシティ・グレイス (2023 Ver.) [cPh82K-yMl0].flac", image: "images/BRILLI@NT_WING03.jpg", introEnd: 16.5, introMid: 7.0 },
+            { title: "幻惑SILHOUETTE", genre: "アンティーカ", src: "audio/幻惑SILHOUETTE (2023 Ver.) [4LznTKY7XdA].flac", image: "images/BRILLI@NT_WING03.jpg", shorten: 100, introMid: 23.0, introEnd: 39.2 },
+            { title: "NEO THEORY FANTASY", genre: "アンティーカ", src: "audio/NEO THEORY FANTASY (2023 Ver.) [jLoeLOvPSY0].flac", image: "images/FRAGMENT_WING03.jpg", introMid: 19.5, introShort: 1.5, introEnd: 67.0 },
+            { title: "ラビリンス・レジスタンス", genre: "アンティーカ", src: "audio/ラビリンス・レジスタンス (2023 Ver.) [FYCvW_4Lqb0].flac", image: "images/FRAGMENT_WING03.jpg", introEnd: 13.7, introMid: 6.3 },
+            { title: "Black Reverie", genre: "アンティーカ", src: "audio/Black Reverie (2023 Ver.) [-zif1Q4fAIw].flac", image: "images/GRADATE_WING03.jpg", introEnd: 36.0, introMid: 16.0 },
+            { title: "純白トロイメライ", genre: "アンティーカ", src: "audio/純白トロイメライ (2023 Ver.) [nGIe0kr1r5Y].flac", image: "images/GRADATE_WING03.jpg", introMid: 4.0, introEnd: 8.0 },
+            { title: "abyss of conflict", genre: "アンティーカ", src: "audio/abyss of conflict (2023 Ver.) [BeSsPrA2BA4].flac", image: "images/LAYERED_WING03.jpg", introShort: 6.0, introMid: 11.0, introEnd: 20.2 },
+            { title: "革命進化論", genre: "アンティーカ", src: "audio/革命進化論 (2023 Ver.) [5JkqSOrkLPc].flac", image: "images/LAYERED_WING03.jpg", introEnd: 16.0, introMid: 6.0 },
+            { title: "浮動性イノセンス", genre: "アンティーカ", src: "audio/浮動性イノセンス [288td1ES8So].flac", image: "images/PANORAMA_WING03.jpg", introMid: 13.0, introEnd: 26.3 },
+            { title: "愚者の独白", genre: "アンティーカ", src: "audio/愚者の独白 [31tL35yYFrY].flac", image: "images/PANORAMA_WING03.jpg", introEnd: 22.0, introMid: 12.0 },
+            { title: "とある英雄たちの物語", genre: "アンティーカ", src: "audio/とある英雄たちの物語 [X3G6sqNjqgc].flac", image: "images/CANVAS02.jpg", shorten: 300, introMid: 3.3, introEnd: 15.7 },
+            { title: "Unsung Heroes", genre: "アンティーカ", src: "audio/Unsung Heroes [U5JkNmBaYS8].flac", image: "images/CANVAS02.jpg", introEnd: 11.5, introMid: 5.5 },
+            { title: "有彩色ユリイカ", genre: "アンティーカ", src: "audio/有彩色ユリイカ [mBQ17J-Nd4Q].flac", image: "images/CANVAS02.jpg", introEnd: 26.4, introMid: 12.0, start: 1.0 },
+            { title: "文明開花輪舞-シティ・ハレルヤ-", genre: "アンティーカ", src: "audio/文明開花輪舞 -シティ・ハレルヤ- [MdHyGhj6MYI].flac", image: "images/ECHOES02.jpg", introShort: 1.8, introMid: 6.0, introEnd: 19.0 },
+            { title: "秋の終わり、僕の記憶", genre: "アンティーカ", src: "audio/秋の終わり、僕の記憶 [uKWT5M74fyw].flac", image: "images/ECHOES02.jpg", introMid: 7.2, introEnd: 17.7 },
+            { title: "ブレイク・アウト・セレンディピティ", genre: "アンティーカ", src: "audio/ブレイク・アウト・セレンディピティ [lHAfNSFvYB0].flac", image: "images/円環01.jpg", start: 0.8, introEnd: 30.0, introMid: 14.0 },
+            { title: "時限式狂騒ワンダーランド", genre: "アンティーカ", src: "audio/時限式狂騒ワンダーランド [QYt37kJTook].flac", image: "images/時限式.jpg", introShort: 3.3, introMid: 9.0, introEnd: 41.2 },
+            { title: "THE LAST PRIDE", genre: "アンティーカ", src: "audio/THE LAST PRIDE [VDnxOtz1chc].flac", image: "images/TheLasrPride.jpg", start: 0.9, introEnd: 24.2, introMid: 12.5 },
+            { title: "QUEEN OF THE PIRATES", genre: "アンティーカ", src: "audio/QUEEN OF THE PIRATES [26_djZAVfs8].flac", image: "images/シャニソン02.jpg", introMid: 3.3, introEnd: 17.3 },
+            { title: "Migratory Echoes (アンティーカ Ver.)", genre: "アンティーカ", src: "audio/Migratory Echoes (アンティーカ Ver.) [9DlhCn_SuCg].flac", image: "images/ECHOES09.jpg", start: 1.0 },
+            { title: "橙より未来", genre: "アンティーカ", src: "audio/橙より未来 [-qGFQYouceo].flac", image: "images/OverThePrism.jpg", start: 0.1, introMid: 3.0, introEnd: 11.0 },
+            { title: "銀翼のアレジアンス -blade of truth-", genre: "アンティーカ", src: "audio/銀翼のアレジアンス -blade of truth- [HcW46eyL2-0].flac", image: "images/騎士団のヴェール.jpg", introEnd: 30.0, introMid: 6.0 },
+            { title: "運命前夜", genre: "アンティーカ", src: "audio/運命前夜 [jhMpX8qBzsE].flac", image: "images/騎士団のヴェール.jpg", introShort: 1.8, introMid: 3.0, introEnd: 6.2 },
+            { title: "銀翼のアヴニール -become the brave-", genre: "アンティーカ", src: "audio/銀翼のアヴニール -become the brave- [NDK9ryJVNiA].flac", image: "images/騎士団のヴェール.jpg", introEnd: 23.3, introMid: 9.0 },
+            { title: "アルストロメリア", genre: "アルストロメリア", src: "audio/アルストロメリア [dDIeDi-NlGQ].flac", image: "images/BRILLIANT_WING05.jpg", introShort: 1.2, introEnd: 29.0, introMid: 4.2 },
+            { title: "ハピリリ", genre: "アルストロメリア", src: "audio/ハピリリ [n_synseUdIg].flac", image: "images/BRILLIANT_WING05.jpg", introEnd: 25.0, introMid: 5.0 },
+            { title: "Bloomy!", genre: "アルストロメリア", src: "audio/Bloomy! [-NWULtqoal0].flac", image: "images/FRAGMENT_WING05.jpg", introShort: 0.8, introEnd: 28.8, introMid: 3.5 },
+            { title: "Love Addiction", genre: "アルストロメリア", src: "audio/Love Addiction [f3fHCDNwTng].flac", image: "images/FRAGMENT_WING05.jpg", introEnd: 10.5, introMid: 3.0 },
+            { title: "ダブル・イフェクト", genre: "アルストロメリア", src: "audio/ダブル・イフェクト [qXMig02NZno].flac", image: "images/GRADATE_WING05.jpg", introMid: 19.0, introEnd: 31.5 },
+            { title: "Anniversary", genre: "アルストロメリア", src: "audio/Anniversary [XCBGCg_FTMQ].flac", image: "images/GRADATE_WING05.jpg", introEnd: 27.0, introMid: 7.0 },
+            { title: "パステルカラー パスカラカラー", genre: "アルストロメリア", src: "audio/パステルカラー パスカラカラー [VyzV-6UWq8U].flac", image: "images/LAYERED_WING05.jpg", start: 0.4, introEnd: 8.7 },
+            { title: "ラブ・ボナペティート", genre: "アルストロメリア", src: "audio/ラブ・ボナペティート [bkbhnhNVRR0].flac", image: "images/LAYERED_WING05.jpg", introMid: 4.3, introEnd: 23.4 },
+            { title: "VERY BERRY LOVE", genre: "アルストロメリア", src: "audio/VERY BERRY LOVE [Gk-NiBl1rNI].flac", image: "images/PANORAMA_WING05.jpg", introMid: 8.1, introEnd: 23.1 },
+            { title: "Give me some more…", genre: "アルストロメリア", src: "audio/Give me some more... [rjn-4vBvFDI].flac", image: "images/PANORAMA_WING05.jpg", introShort: 1.2, introMid: 3.4, introEnd: 17.1 },
+            { title: "メッセージ", genre: "アルストロメリア", src: "audio/メッセージ [u2KT-KXi9Nw].flac", image: "images/CANVAS04.jpg", introMid: 16.0, introEnd: 28.2 },
+            { title: "Love Letter", genre: "アルストロメリア", src: "audio/Love Letter [jDH6p8QnKms].flac", image: "images/CANVAS04.jpg", introEnd: 10.6, introMid: 3.0 },
+            { title: "グラデーション", genre: "アルストロメリア", src: "audio/グラデーション [cu1_MB4fkeM].flac", image: "images/CANVAS04.jpg", introEnd: 30.0, introMid: 2.5 },
+            { title: "アスタラブビスタ", genre: "アルストロメリア", src: "audio/アスタラブビスタ [of_J-pt-pgc].flac", image: "images/ECHOES04.jpg", introShort: 3.8, introEnd: 23.8, introMid: 9.5 },
+            { title: "DAYDREAM LOVE", genre: "アルストロメリア", src: "audio/DAYDREAM LOVE [jkg10yrznU0].flac", image: "images/ECHOES04.jpg", start: 0.2, introEnd: 12.5, introMid: 3.0 },
+            { title: "ルピラ", genre: "アルストロメリア", src: "audio/ルピラ [0z5rCRe9Pdk].flac", image: "images/円環03.jpg", introShort: 1.4, introMid: 2.5, introEnd: 9.1 },
+            { title: "明日もBeautiful Day", genre: "アルストロメリア", src: "audio/明日もBeautiful Day [EO-ypaEW6s4].flac", image: "images/明日もBeautifulDay.jpg", introMid: 3.0, introEnd: 20.5 },
+            { title: "mellow mellow", genre: "アルストロメリア", src: "audio/mellow mellow [dybEycyJ4ZI].flac", image: "images/メロメロ.jpg", start: 0.18, introEnd: 28.7, introMid: 15.0 },
+            { title: "Sleepless Nights", genre: "アルストロメリア", src: "audio/Sleepless Nights [2Dmjx6f47oU].flac", image: "images/シャニソン02.jpg", introEnd: 17.0, introMid: 7.0 },
+            { title: "Migratory Echoes (アルスト Ver.)", genre: "アルストロメリア", src: "audio/Migratory Echoes (アルストロメリア Ver.) [_McBSbZiXA4].flac", image: "images/ECHOES09.jpg", start: 0.9, introMid: 3.0, introEnd: 6.0 },
+            { title: "With you", genre: "アルストロメリア", src: "audio/With you [s5-6ICR5kAE].flac", image: "images/OverThePrism.jpg", introShort: 1.5, introEnd: 17.0, introMid: 6.0 },
+            { title: "夢咲きAfter school", genre: "放課後クライマックスガールズ", src: "audio/夢咲きAfter school [0ky-ClgtLrM].flac", image: "images/BRILLIANT_WING04.jpg", introEnd: 18.4, introMid: 4.8 },
+            { title: "太陽キッス", genre: "放課後クライマックスガールズ", src: "audio/太陽キッス [TlMKbphvPkE].flac", image: "images/BRILLIANT_WING04.jpg", introShort: 1.2, introEnd: 34.4, introMid: 3.0 },
+            { title: "ビーチブレイバー", genre: "放課後クライマックスガールズ", src: "audio/ビーチブレイバー [BXp0D3gdrrY].flac", image: "images/FRAGMENT_WING04.jpg", introShort: 0.8, introMid: 4.0, introEnd: 17.2 },
+            { title: "よりみちサンセット", genre: "放課後クライマックスガールズ", src: "audio/よりみちサンセット [3-OEAy-Yqzc].flac", image: "images/FRAGMENT_WING04.jpg", introEnd: 24.3, introMid: 8.5, introShort: 2.0 },
+            { title: "五ツ座流星群", genre: "放課後クライマックスガールズ", src: "audio/五ツ座流星群 [3iISh5nQ9ws].flac", image: "images/GRADATE_WING04.jpg", introEnd: 6.0, introMid: 3.0 },
+            { title: "学祭革命夜明け前", genre: "放課後クライマックスガールズ", src: "audio/学祭革命夜明け前 [KKyeKHDA_Rg].flac", image: "images/GRADATE_WING04.jpg", introEnd: 18.5, introMid: 6.1 },
+            { title: "クライマックスアイランド", genre: "放課後クライマックスガールズ", src: "audio/クライマックスアイランド [3JQjFkwVo9Y].flac", image: "images/LAYERED_WING04.jpg", introShort: 1.5, introEnd: 8.2, introMid: 3.0 },
+            { title: "拝啓タイムカプセル", genre: "放課後クライマックスガールズ", src: "audio/拝啓タイムカプセル [aD_jSRh2zHk].flac", image: "images/LAYERED_WING04.jpg", introShort: 2.2, introEnd: 17.1, introMid: 6.0 },
+            { title: "一閃は君が導く", genre: "放課後クライマックスガールズ", src: "audio/一閃は君が導く [5gC1Acs0sq8].flac", image: "images/PANORAMA_WING04.jpg", introShort: 3.1, introMid: 9.0, introEnd: 23.3 },
+            { title: "キャットスクワッド", genre: "放課後クライマックスガールズ", src: "audio/キャットスクワッド [K7rfVTsLBdw].flac", image: "images/PANORAMA_WING04.jpg", introShort: 2.2, introMid: 7.8, introEnd: 14.2 },
+            { title: "ハナサカサイサイ", genre: "放課後クライマックスガールズ", src: "audio/ハナサカサイサイ [YCODUk2zMtc].flac", image: "images/CANVAS03.jpg", introShort: 1.3, introEnd: 9.8, introMid: 3.5 },
+            { title: "全力アンサー", genre: "放課後クライマックスガールズ", src: "audio/全力アンサー [PyJYgXeFHvM].flac", image: "images/CANVAS03.jpg", introMid: 5.8, introEnd: 25.4 },
+            { title: "ひめくりモザイク", genre: "放課後クライマックスガールズ", src: "audio/ひめくりモザイク [bTkqudimYUI].flac", image: "images/CANVAS03.jpg", introShort: 1.5, introMid: 5.0, introEnd: 22.5 },
+            { title: "放課後マギア", genre: "放課後クライマックスガールズ", src: "audio/放課後マギア [hPWqVsQTIf4].flac", image: "images/ECHOES03.jpg", start: 0.4, introShort: 1.5, introEnd: 23.0, introMid: 5.0 },
+            { title: "パーティマジックデザイナー", genre: "放課後クライマックスガールズ", src: "audio/パーティーマジックデザイナー [i2bLzPugsn4].flac", image: "images/ECHOES03.jpg", introShort: 1.8, introEnd: 8.8, introMid: 4.0 },
+            { title: "進路は超銀河", genre: "放課後クライマックスガールズ", src: "audio/進路は超銀河 [E8Pyk6KyBao].flac", image: "images/円環02.jpg", introShort: 1.8, introEnd: 6.0, introMid: 4.0 },
+            { title: "裸足じゃイラレナイ", genre: "放課後クライマックスガールズ", src: "audio/裸足じゃイラレナイ [vI6ofjkxpsE].flac", image: "images/裸足じゃイラレナイ.jpg", introEnd: 10.9, introMid: 3.3 },
+            { title: "快盗Vを見逃すな", genre: "放課後クライマックスガールズ", src: "audio/快盗Vを見逃すな [79UOSyf93G8].flac", image: "images/kaitouV.jpg", introMid: 3.0, introEnd: 5.8 },
+            { title: "キラピコ.exe", genre: "放課後クライマックスガールズ", src: "audio/キラピコ.exe [FVFm9vebdSM].flac", image: "images/シャニソン02.jpg", introEnd: 11.3, introMid: 3.0, introShort: 1.3 },
+            { title: "Migratory Echoes (放クラVer.)", genre: "放課後クライマックスガールズ", src: "audio/Migratory Echoes (放課後クライマックスガールズ Ver.) [pbgN3qwq1XY].flac", image: "images/ECHOES09.jpg", introShort: 3.2, introMid: 6.0, introEnd: 16.5 },
+            { title: "さあ舞い上がれ", genre: "放課後クライマックスガールズ", src: "audio/さあ舞い上がれ [9AWm3InRYkU].flac", image: "images/OverThePrism.jpg", introEnd: 12.1, introMid: 4.0 },
+            { title: "乱舞る", genre: "放課後クライマックスガールズ", src: "audio/乱舞る [CHQsfBNN2UU].flac", image: "images/乱舞る.jpg", introMid: 13.0, introEnd: 25.4 },
+            { title: "疾風ザブングル", genre: "放課後クライマックスガールズ", src: "audio/疾風ザブングル [vScTJ37rlso].flac", image: "images/乱舞る.jpg", introShort: 3.0, introMid: 6.8, introEnd: 13.1 },
+            { title: "放っておかないファイヴァーズ", genre: "放課後クライマックスガールズ", src: "audio/放っておかないファイヴァーズ [Z_BpyttvaKI].flac", image: "images/放っておかない.jpg", introShort: 1.5, introEnd: 20.9, introMid: 8.6 },
+            { title: "Wandering Dream Chaser", genre: "ストレイライト", src: "audio/Wandering Dream Chaser [fZkadm6MWic].flac", image: "images/FRAGMENT_WING06.jpg", introShort: 2.0, introEnd: 22.9, introMid: 4.5 },
+            { title: "Transceding The World", genre: "ストレイライト", src: "audio/Transcending The World [tZBGg95hMoM].flac", image: "images/FRAGMENT_WING06.jpg", introShort: 0.7, introMid: 2.3, introEnd: 23.5 },
+            { title: "Hide ＆ Attack", genre: "ストレイライト", src: "audio/Hide & Attack [Fk1NobIWGvg].flac", image: "images/GRADATE_WING06.jpg", introEnd: 18.2, introShort: 1.8, introMid: 11.0 },
+            { title: "Destined Rival", genre: "ストレイライト", src: "audio/Destined Rival [O2Pcd-FnQ0k].flac", image: "images/GRADATE_WING06.jpg", introEnd: 20.2, introShort: 3.3, introMid: 11.0 },
+            { title: "Another Rampage", genre: "ストレイライト", src: "audio/Another Rampage [Q3uzDZ_Gcsg].flac", image: "images/LAYERED_WING06.jpg", introEnd: 23.3, introMid: 10.5 },
+            { title: "Timeless Shooting Star", genre: "ストレイライト", src: "audio/Timeless Shooting Star [qApldtgM_QQ].flac", image: "images/LAYERED_WING06.jpg", introEnd: 23.1, introMid: 8.0 },
+            { title: "Tracing Defender", genre: "ストレイライト", src: "audio/Tracing Defender [AAcw716Wd3w].flac", image: "images/PANORAMA_WING06.jpg", introShort: 2.9, introEnd: 21.8, introMid: 4.0 },
+            { title: "Overdrive Emotion", genre: "ストレイライト", src: "audio/Overdrive Emotion [qJIneWk8sMg].flac", image: "images/PANORAMA_WING06.jpg", introEnd: 11.5, introMid: 3.5 },
+            { title: "Imitaion Ghost", genre: "ストレイライト", src: "audio/Imitation Ghost [T0nLvO4UsVU].flac", image: "images/CANVAS05.jpg", introShort: 1.2, introEnd: 14.0, introMid: 3.2 },
+            { title: "BURN BURN", genre: "ストレイライト", src: "audio/BURN BURN [EgJIM50Bapc].flac", image: "images/CANVAS05.jpg", introEnd: 15.0, introMid: 7.5 },
+            { title: "Start up Stand up", genre: "ストレイライト", src: "audio/Start up Stand up [_1qc7wiRPvw].flac", image: "images/CANVAS05.jpg", introEnd: 31.5, introMid: 10.4, introShort: 2.0 },
+            { title: "Cyber Parkour", genre: "ストレイライト", src: "audio/Cyber Parkour [25Su6jUeLDc].flac", image: "images/ECHOES05.jpg", introEnd: 13.5, introMid: 5.0 },
+            { title: "LIVE LIVE LIVE!", genre: "ストレイライト", src: "audio/LIVE LIVE LIVE! [qqyTvgd8ncA].flac", image: "images/ECHOES05.jpg", introEnd: 27.2, introMid: 7.8, introShort: 3.5 },
+            { title: "GET OVER", genre: "ストレイライト", src: "audio/GET OVER [W9fQvU1mwoY].flac", image: "images/円環02.jpg", introShort: 2.0, introEnd: 29.6, introMid: 9.0 },
+            { title: "LINKS", genre: "ストレイライト", src: "audio/LINKs [ePj_kfBElbo].flac", image: "images/LINKs.jpg", introEnd: 32.8, introShort: 1.2, introMid: 3.3 },
+            { title: "Real Mind Shakes", genre: "ストレイライト", src: "audio/Real Mind Shakes [czQGkBy5NBY].flac", image: "images/RealMindShakes.jpg", introShort: 1.1, introEnd: 15.8, introMid: 5.5 },
+            { title: "Future Transit", genre: "ストレイライト", src: "audio/Future Transit [w2ZMMZhWB1o].flac", image: "images/シャニソン01.jpg", introEnd: 20.0, introMid: 7.0 },
+            { title: "Migratory Echoes (ストレイVer.)", genre: "ストレイライト", src: "audio/Migratory Echoes (ストレイライト Ver.) [D2ZSLboilqw].flac", image: "images/ECHOES09.jpg", introShort: 4.0, introMid: 6.0, introEnd: 16.0 },
+            { title: "Future Designer", genre: "ストレイライト", src: "audio/Future Designer [pKKh7_5n9Og].flac", image: "images/OverThePrism.jpg", introEnd: 16.0, introShort: 1.8, introMid: 6.0 },
+            { title: "One Live One Love", genre: "ストレイライト", src: "audio/One Live One Love [hkB6Dg6btUY].flac", image: "images/シンギュラリティ.jpg", introEnd: 18.7, introShort: 2.6, introMid: 7.2 },
+            { title: "One Live One Love (Mortal Remix)", genre: "ストレイライト", src: "audio/One Live One Love (Mortal Remix) [BzFKHA2BEoc].flac", image: "images/シンギュラリティ.jpg", introShort: 2.6, introMid: 10.6, introEnd: 63.0 },
+            { title: "いつだって僕らは", genre: "ノクチル", src: "audio/いつだって僕らは [sgq2T14EyMo].flac", image: "images/GRADATE_WING07.jpg", introMid: 2.5, introEnd: 15.9 },
+            { title: "あの花のように", genre: "ノクチル", src: "audio/あの花のように [NaCSpXECH2o].flac", image: "images/GRADATE_WING07.jpg", introEnd: 5.0, shorten: 180 },
+            { title: "僕らだけの未来の空", genre: "ノクチル", src: "audio/僕らだけの未来の空 [SkQKSCWmRoM].flac", image: "images/LAYERED_WING07.jpg", introEnd: 22.8 },
+            { title: "今しかない瞬間を", genre: "ノクチル", src: "audio/今しかない瞬間を [CC2KWXZtzVc].flac", image: "images/LAYERED_WING07.jpg", introEnd: 11.0 },
+            { title: "Catch the Breeze", genre: "ノクチル", src: "audio/Catch the Breeze [D8Jv1we451E].flac", image: "images/PANORAMA_WING07.jpg", introMid: 2.5, introEnd: 19.2 },
+            { title: "アスファルトを鳴らして", genre: "ノクチル", src: "audio/アスファルトを鳴らして [BvMOtJr56vA].flac", image: "images/PANORAMA_WING07.jpg", introEnd: 22.5 },
+            { title: "Reflection", genre: "ノクチル", src: "audio/Reflection [1L3D6oRnT6k].flac", image: "images/CANVAS06.jpg", introEnd: 21.5 },
+            { title: "夢が夢じゃなくなるその日まで", genre: "ノクチル", src: "audio/夢が夢じゃなくなるその日まで [X3L0XntjcYM].flac", image: "images/CANVAS06.jpg", shorten: 200, introEnd: 11.0 },
+            { title: "青とオレンジ", genre: "ノクチル", src: "audio/青とオレンジ [9y9nt5y9LJ8].flac", image: "images/CANVAS06.jpg", introMid: 3.0, introEnd: 11.2 },
+            { title: "いつかのキミへ", genre: "ノクチル", src: "audio/いつかのキミへ [y2VturCh4PI].flac", image: "images/ECHOES06.jpg", introMid: 3.0, introEnd: 24.0 },
             { title: "365日のストーリー", genre: "ノクチル", src: "audio/365日のストーリー [kIQJgUHJZvA].flac", image: "images/ECHOES06.jpg" },
-            { title: "Swing it!", genre: "ノクチル", src: "audio/Swing it! [4vFn5zb7Nzk].flac", image: "images/円環04.jpg" },
-            { title: "青空", genre: "ノクチル", src: "audio/青空 [rqwL-zegysc].flac", image: "images/青空.jpg" },
-            { title: "グッバイ", genre: "ノクチル", src: "audio/グッバイ [HxI8csmgT6E].flac", image: "images/グッバイ.jpg" },
-            { title: "愛しき日々", genre: "ノクチル", src: "audio/愛しき日々 [gq1eN8d3778].flac", image: "images/シャニソン01.jpg" },
-            { title: "Migratory Echoes (ノクチルVer.)", genre: "ノクチル", src: "audio/Migratory Echoes (ノクチル Ver.) [EB6SL4vv9aI].flac", image: "images/ECHOES09.jpg" },
-            { title: "未来へのSign", genre: "ノクチル", src: "audio/未来へのSign [_tHKr5fdK4A].flac", image: "images/OverThePrism.jpg" },
-            { title: "OH MY GOD", genre: "シーズ", src: "audio/OH MY GOD [vnbWkAK4azQ].flac", image: "images/LAYERED_WING08.jpg" },
-            { title: "Fly and Fly", genre: "シーズ", src: "audio/Fly and Fly [BITX92KQfX0].flac", image: "images/LAYERED_WING08.jpg" },
+            { title: "Swing it!", genre: "ノクチル", src: "audio/Swing it! [4vFn5zb7Nzk].flac", image: "images/円環04.jpg", start: 1.0, introMid: 3.0, introEnd: 12.0 },
+            { title: "青空", genre: "ノクチル", src: "audio/青空 [rqwL-zegysc].flac", image: "images/青空.jpg", introMid: 3.0, introEnd: 20.0 },
+            { title: "グッバイ", genre: "ノクチル", src: "audio/グッバイ [HxI8csmgT6E].flac", image: "images/グッバイ.jpg", introMid: 3.0, introEnd: 26.0 },
+            { title: "愛しき日々", genre: "ノクチル", src: "audio/愛しき日々 [gq1eN8d3778].flac", image: "images/シャニソン01.jpg", start: 0.3, introMid: 4.5, introEnd: 16.0 },
+            { title: "Migratory Echoes (ノクチルVer.)", genre: "ノクチル", src: "audio/Migratory Echoes (ノクチル Ver.) [EB6SL4vv9aI].flac", image: "images/ECHOES09.jpg", shorten: 300 },
+            { title: "未来へのSign", genre: "ノクチル", src: "audio/未来へのSign [_tHKr5fdK4A].flac", image: "images/OverThePrism.jpg", introMid: 3.0, introEnd: 17.0 },
+            { title: "OH MY GOD", genre: "シーズ", src: "audio/OH MY GOD [vnbWkAK4azQ].flac", image: "images/LAYERED_WING08.jpg", introEnd: 11.3 },
+            { title: "Fly and Fly", genre: "シーズ", src: "audio/Fly and Fly [BITX92KQfX0].flac", image: "images/LAYERED_WING08.jpg", shorten: 200, },
             { title: "Fashionable", genre: "シーズ", src: "audio/Fashionable [xj3U7rxLU7A].flac", image: "images/PANORAMA_WING08.jpg" },
-            { title: "Bouncy Girl", genre: "シーズ", src: "audio/Bouncy Girl [oN3R78I9Tuc].flac", image: "images/PANORAMA_WING08.jpg" },
-            { title: "Forbidden Paradise", genre: "シーズ", src: "audio/Forbidden Paradise [TbG6ZmWLgOo].flac", image: "images/CANVAS07.jpg" },
-            { title: "SWEETEST BITE", genre: "シーズ", src: "audio/SWEETEST BITE [3DrcZ-GZ50Y].flac", image: "images/CANVAS07.jpg" },
-            { title: "Wihte Story", genre: "シーズ", src: "audio/White Story [8yLzTFnI8oY].flac", image: "images/CANVAS07.jpg" },
-            { title: "Monochromatic", genre: "シーズ", src: "audio/Monochromatic [mSITQcotcgA].flac", image: "images/ECHOES07.jpg" },
-            { title: "Snowflake", genre: "シーズ", src: "audio/Snowflake [ln4Zkas5LAU].flac", image: "images/ECHOES07.jpg" },
-            { title: "Break Chain", genre: "シーズ", src: "audio/Break Chain [ZdDb8aJKhSw].flac", image: "images/円環01.jpg" },
-            { title: "Happier", genre: "シーズ", src: "audio/Happier [R3xelzEB7Rc].flac", image: "images/Happier.jpg" },
-            { title: "After Run", genre: "シーズ", src: "audio/After Run [GBy9OCb3z_Q].flac", image: "images/AfterRun.jpg" },
-            { title: "Fading Stars", genre: "シーズ", src: "audio/Fading Stars [0HdctmZ-xK8].flac", image: "images/シャニソン01.jpg" },
-            { title: "Migratory Echoes (シーズVer.)", genre: "シーズ", src: "audio/Migratory Echoes (シーズ Ver.) [rfrNzu1h2Mg].flac", image: "images/ECHOES09.jpg" },
-            { title: "無自覚アプリオリ", genre: "コメティック", src: "audio/無自覚アプリオリ [DtfRmBLx_R8].flac", image: "images/CANVAS08.jpg" },
-            { title: "くだらないや", genre: "コメティック", src: "audio/くだらないや [S3Yo7SPkxGc].flac", image: "images/CANVAS08.jpg" },
-            { title: "平行線の美学", genre: "コメティック", src: "audio/平行線の美学 [y6RIPflxByI].flac", image: "images/CANVAS08.jpg" },
-            { title: "泥濘鳴鳴", genre: "コメティック", src: "audio/泥濘鳴鳴 [CuRIuFRD1zI].flac", image: "images/ECHOES08.jpg" },
-            { title: "Clean.Clean up", genre: "コメティック", src: "audio/Clean.Clean up [4T-khJ2WrG0].flac", image: "images/ECHOES08.jpg" },
-            { title: "似セ者", genre: "コメティック", src: "audio/似セ者 [zCNzLLWFPjI].flac", image: "images/円環03.jpg" },
+            { title: "Bouncy Girl", genre: "シーズ", src: "audio/Bouncy Girl [oN3R78I9Tuc].flac", image: "images/PANORAMA_WING08.jpg", introEnd: 13.3 },
+            { title: "Forbidden Paradise", genre: "シーズ", src: "audio/Forbidden Paradise [TbG6ZmWLgOo].flac", image: "images/CANVAS07.jpg", introMid: 3.0, introEnd: 16.2 },
+            { title: "SWEETEST BITE", genre: "シーズ", src: "audio/SWEETEST BITE [3DrcZ-GZ50Y].flac", image: "images/CANVAS07.jpg", introEnd: 13.0 },
+            { title: "Wihte Story", genre: "シーズ", src: "audio/White Story [8yLzTFnI8oY].flac", image: "images/CANVAS07.jpg", introMid: 3.0, introEnd: 19.8 },
+            { title: "Monochromatic", genre: "シーズ", src: "audio/Monochromatic [mSITQcotcgA].flac", image: "images/ECHOES07.jpg", shorten: 100 },
+            { title: "Snowflake", genre: "シーズ", src: "audio/Snowflake [ln4Zkas5LAU].flac", image: "images/ECHOES07.jpg", introMid: 3.0, introEnd: 11.3 },
+            { title: "Break Chain", genre: "シーズ", src: "audio/Break Chain [ZdDb8aJKhSw].flac", image: "images/円環01.jpg", introMid: 4.0, introEnd: 9.8 },
+            { title: "Happier", genre: "シーズ", src: "audio/Happier [R3xelzEB7Rc].flac", image: "images/Happier.jpg", start: 0.8, introMid: 5.0, introEnd: 17.2 },
+            { title: "After Run", genre: "シーズ", src: "audio/After Run [GBy9OCb3z_Q].flac", image: "images/AfterRun.jpg", introMid: 12.0, introEnd: 24.8 },
+            { title: "Fading Stars", genre: "シーズ", src: "audio/Fading Stars [0HdctmZ-xK8].flac", image: "images/シャニソン01.jpg", introMid: 3.0, introEnd: 8.2 },
+            { title: "Migratory Echoes (シーズVer.)", genre: "シーズ", src: "audio/Migratory Echoes (シーズ Ver.) [rfrNzu1h2Mg].flac", image: "images/ECHOES09.jpg", shorten: 100, introEnd: 4.0 },
+            { title: "無自覚アプリオリ", genre: "コメティック", src: "audio/無自覚アプリオリ [DtfRmBLx_R8].flac", image: "images/CANVAS08.jpg", introMid: 3.0, introEnd: 16.1 },
+            { title: "くだらないや", genre: "コメティック", src: "audio/くだらないや [S3Yo7SPkxGc].flac", image: "images/CANVAS08.jpg", introMid: 3.0, introEnd: 11.0 },
+            { title: "平行線の美学", genre: "コメティック", src: "audio/平行線の美学 [y6RIPflxByI].flac", image: "images/CANVAS08.jpg", shorten: 200, introEnd: 12.0 },
+            { title: "泥濘鳴鳴", genre: "コメティック", src: "audio/泥濘鳴鳴 [CuRIuFRD1zI].flac", image: "images/ECHOES08.jpg", introMid: 3.0, introEnd: 18.0 },
+            { title: "Clean.Clean up", genre: "コメティック", src: "audio/Clean.Clean up [4T-khJ2WrG0].flac", image: "images/ECHOES08.jpg", start: 0.4, introMid: 2.5, introEnd: 4.0 },
+            { title: "似セ者", genre: "コメティック", src: "audio/似セ者 [zCNzLLWFPjI].flac", image: "images/円環03.jpg", introMid: 3.0, introEnd: 16.0 },
             { title: "ハナムケのハナタバ", genre: "コメティック", src: "audio/ハナムケのハナタバ [JRSbcYR6FWE].flac", image: "images/ハナハナ.jpg" },
-            { title: "Heads or Tails?", genre: "コメティック", src: "audio/Heads or Tails？ [bQZw4JzZnhI].flac", image: "images/HeadsorTails.jpg" },
+            { title: "Heads or Tails?", genre: "コメティック", src: "audio/Heads or Tails？ [bQZw4JzZnhI].flac", image: "images/HeadsorTails.jpg", shorten: 200, introMid: 3.0, introEnd: 10.0 },
             { title: "アイノウ", genre: "コメティック", src: "audio/アイノウ [5bayGoEJGGs].flac", image: "images/シャニソン02.jpg" },
             { title: "Migratory Echoes (コメティックVer.)", genre: "コメティック", src: "audio/Migratory Echoes (コメティック Ver.) [bPPofGixnS4].flac", image: "images/ECHOES09.jpg" },
-            { title: "Spread the Wings!!", genre: "シャイニーカラーズ", src: "audio/Spread the Wings!! -28 colors- [fKTOULerzCI].flac", image: "images/BRILLIANT_WING01.jpg" },
-            { title: "Multicolored Sky", genre: "シャイニーカラーズ", src: "audio/Multicolored Sky -28 colors- [yCJqllrn6q4].flac", image: "images/BRILLIANT_WING01.jpg" },
-            { title: "SNOW FLAKES MEMORIES", genre: "シャイニーカラーズ", src: "audio/SNOW FLAKES MEMORIES -28 colors- [KGtLhtGT-oo].flac", image: "images/SEASONAL_WINTER.jpg" },
+            { title: "Spread the Wings!!", genre: "シャイニーカラーズ", src: "audio/Spread the Wings!! -28 colors- [fKTOULerzCI].flac", image: "images/BRILLIANT_WING01.jpg", introMid: 6.0, introEnd: 13.0 },
+            { title: "Multicolored Sky", genre: "シャイニーカラーズ", src: "audio/Multicolored Sky -28 colors- [yCJqllrn6q4].flac", image: "images/BRILLIANT_WING01.jpg", introMid: 7.5, introEnd: 20.5 },
+            { title: "SNOW FLAKES MEMORIES", genre: "シャイニーカラーズ", src: "audio/SNOW FLAKES MEMORIES -28 colors- [KGtLhtGT-oo].flac", image: "images/SEASONAL_WINTER.jpg", introShort: 4.2, introMid: 7.0, introEnd: 26.0 },
             { title: "Let's get a chance", genre: "シャイニーカラーズ", src: "audio/Let's get a chance -28 colors- [cXERsDyCXHE].flac", image: "images/SEASONAL_WINTER.jpg" },
-            { title: "Ambitious Eve", genre: "シャイニーカラーズ", src: "audio/Ambitious Eve -28 colors- [Jv8o1Ib_x78].flac", image: "images/FRAGMENT_WING01.jpg" },
-            { title: "いつか Shiny Days", genre: "シャイニーカラーズ", src: "audio/いつか Shiny Days -28 colors- [aGHDo0ckBC8].flac", image: "images/FRAGMENT_WING01.jpg" },
-            { title: "FUTURITY SMILE", genre: "シャイニーカラーズ", src: "audio/FUTURITY SMILE -28 colors- [Q6ASJ7SKrHw].flac", image: "images/FUTURITY_SMILE.jpg" },
-            { title: "SWEET♡STEP", genre: "シャイニーカラーズ", src: "audio/SWEETSTEP -28 colors- [dc_uCJQIeRQ].flac", image: "images/SWEET_STEP.jpg" },
-            { title: "シャイノグラフィ", genre: "シャイニーカラーズ", src: "audio/シャイノグラフィ -28 colors- [5BHV0ojGrqU].flac", image: "images/GRADATE_WING01.jpg" },
-            { title: "Dye the sky.", genre: "シャイニーカラーズ", src: "audio/Dye the sky. -28 colors- [6za_i36bREI].flac", image: "images/GRADATE_WING01.jpg" },
-            { title: "Resonance＋", genre: "シャイニーカラーズ", src: "audio/Resonance -28 colors- [rwHMc4TQhv4].flac", image: "images/LAYERED_WING01.jpg" },
-            { title: "Color Days", genre: "シャイニーカラーズ", src: "audio/Color Days -28 colors- [4KoAWGpdruA].flac", image: "images/LAYERED_WING01.jpg" },
-            { title: "虹の行方", genre: "シャイニーカラーズ", src: "audio/虹の行方 -28 colors- [WTU1ZLNe14A].flac", image: "images/PANORAMA_WING01.jpg" },
-            { title: "Daybreak Age", genre: "シャイニーカラーズ", src: "audio/Daybreak Age -28 colors- [9RiMstbJNCU].flac", image: "images/PANORAMA_WING01.jpg" },
-            { title: "Shiny Stories", genre: "シャイニーカラーズ", src: "audio/Shiny Stories [jpr4yZwEOiU].flac", image: "images/ShinyStories.jpg" },
-            { title: "星の声", genre: "シャイニーカラーズ", src: "audio/星の声 [XV6fnEG2gt4].flac", image: "images/星の声.jpg" },
+            { title: "Ambitious Eve", genre: "シャイニーカラーズ", src: "audio/Ambitious Eve -28 colors- [Jv8o1Ib_x78].flac", image: "images/FRAGMENT_WING01.jpg", shorten: 200, introMid: 3.0, introEnd: 16.2 },
+            { title: "いつか Shiny Days", genre: "シャイニーカラーズ", src: "audio/いつか Shiny Days -28 colors- [aGHDo0ckBC8].flac", image: "images/FRAGMENT_WING01.jpg", introMid: 7.0, introEnd: 17.0 },
+            { title: "FUTURITY SMILE", genre: "シャイニーカラーズ", src: "audio/FUTURITY SMILE -28 colors- [Q6ASJ7SKrHw].flac", image: "images/FUTURITY_SMILE.jpg", introMid: 6.0, introEnd: 13.0 },
+            { title: "SWEET♡STEP", genre: "シャイニーカラーズ", src: "audio/SWEETSTEP -28 colors- [dc_uCJQIeRQ].flac", image: "images/SWEET_STEP.jpg", introEnd: 14.0 },
+            { title: "シャイノグラフィ", genre: "シャイニーカラーズ", src: "audio/シャイノグラフィ -28 colors- [5BHV0ojGrqU].flac", image: "images/GRADATE_WING01.jpg", introMid: 7.2, introEnd: 21.3 },
+            { title: "Dye the sky.", genre: "シャイニーカラーズ", src: "audio/Dye the sky. -28 colors- [6za_i36bREI].flac", image: "images/GRADATE_WING01.jpg", shorten: 200, introEnd: 15.4 },
+            { title: "Resonance＋", genre: "シャイニーカラーズ", src: "audio/Resonance -28 colors- [rwHMc4TQhv4].flac", image: "images/LAYERED_WING01.jpg", introMid: 3.0, introEnd: 24.0 },
+            { title: "Color Days", genre: "シャイニーカラーズ", src: "audio/Color Days -28 colors- [4KoAWGpdruA].flac", image: "images/LAYERED_WING01.jpg", introMid: 3.0, introEnd: 10.8 },
+            { title: "虹の行方", genre: "シャイニーカラーズ", src: "audio/虹の行方 -28 colors- [WTU1ZLNe14A].flac", image: "images/PANORAMA_WING01.jpg", introMid: 3.0, introEnd: 7.8 },
+            { title: "Daybreak Age", genre: "シャイニーカラーズ", src: "audio/Daybreak Age -28 colors- [9RiMstbJNCU].flac", image: "images/PANORAMA_WING01.jpg", introShort: 1.4, introMid: 2.8, introEnd: 18.6 },
+            { title: "Shiny Stories", genre: "シャイニーカラーズ", src: "audio/Shiny Stories [jpr4yZwEOiU].flac", image: "images/ShinyStories.jpg", introShort: 3.1, introMid: 11.0, introEnd: 19.8 },
+            { title: "星の声", genre: "シャイニーカラーズ", src: "audio/星の声 [XV6fnEG2gt4].flac", image: "images/星の声.jpg", shorten: 180, introMid: 2.5, introEnd: 15.8 },
             { title: "ツバサグラビティ", genre: "シャイニーカラーズ", src: "audio/ツバサグラビティ [6E9Kx_VMm5g].flac", image: "images/ツバサグラビティ.jpg" },
-            { title: "Migratory Echoes", genre: "シャイニーカラーズ", src: "audio/Migratory Echoes [pZFWSNYnxN4].flac", image: "images/ECHOES09.jpg" },
-            { title: "プリズムフレア", genre: "シャイニーカラーズ", src: "audio/プリズムフレア -23 colors- [o1cSIJx-yHw].flac", image: "images/プリズムフレア.jpg" },
-            { title: "C'mon! Join Us", genre: "シャイニーカラーズ", src: "audio/C'mon! Join Us [Siq4jJ1RFMY].flac", image: "images/C'mon.jpg" },
-            { title: "愛なView", genre: "シャイニーカラーズ", src: "audio/愛なView [n4dlNkvwLyI].flac", image: "images/C'mon.jpg" },
-            { title: "Poison Berry Daughters", genre: "シャイニーカラーズ", src: "audio/Poison Berry Daughters [08yGaxb6jBo].flac", image: "images/HappySurpriseTrick!.jpg" },
-            { title: "Borderline", genre: "シャイニーカラーズ", src: "audio/Borderline [WQkdwZD27ME].flac", image: "images/Borderline.jpg" },
-            { title: "感謝のコントレイル", genre: "シャイニーカラーズ", src: "audio/感謝のコントレイル [THWHL4S3UpM].flac", image: "images/283体操.jpg" },
-            { title: "ありったけの輝きで", genre: "ソロ曲", src: "audio/ありったけの輝きで [WMkSD5-lm6Q].flac", image: "images/STELLA.jpg" },
-            { title: "スローモーション", genre: "ソロ曲", src: "audio/スローモーション [nZyNbYoqlxI].flac", image: "images/Luna.jpg" },
-            { title: "HAREBARE!!", genre: "ソロ曲", src: "audio/HAREBARE!! [lw2ViO7-040].flac", image: "images/Sol.jpg" },
-            { title: "アポイント・シグナル", genre: "ソロ曲", src: "audio/アポイント・シグナル [5ZlVL9HMroc].flac", image: "images/STELLA.jpg" },
-            { title: "雪・月・風・花", genre: "ソロ曲", src: "audio/雪・月・風・花 [mnkKbnWmJqg].flac", image: "images/Luna.jpg" },
-            { title: "誰ソ彼アイデンティティー", genre: "ソロ曲", src: "audio/誰ソ彼アイデンティティー [sdsxf89-3DY].flac", image: "images/Luna.jpg" },
-            { title: "プラスチック・アンブレラ", genre: "ソロ曲", src: "audio/プラスチック・アンブレラ (2022 Ver.) [xkNmOk9yQ8g].flac", image: "images/Luna.jpg" },
-            { title: "千夜アリア", genre: "ソロ曲", src: "audio/千夜アリア [Bhn7kN-rSu0].flac", image: "images/Sol.jpg" },
-            { title: "Sweet Memories", genre: "ソロ曲", src: "audio/Sweet Memories [f4vZtYqzXvc].flac", image: "images/STELLA.jpg" },
-            { title: "また明日", genre: "ソロ曲", src: "audio/また明日 [P7j2qGoipys].flac", image: "images/Luna.jpg" },
-            { title: "Darling you!", genre: "ソロ曲", src: "audio/Darling you! [HSw_sVUiAA0].flac", image: "images/Sol.jpg" },
-            { title: "ハナマルバッジ", genre: "ソロ曲", src: "audio/ハナマルバッジ [_LQZ4HUQESU].flac", image: "images/STELLA.jpg" },
-            { title: "チョコデート・サンデー", genre: "ソロ曲", src: "audio/チョコデート・サンデー [JUvpDPykqnw].flac", image: "images/STELLA.jpg" },
-            { title: "過純性ブリーチ", genre: "ソロ曲", src: "audio/過純性ブリーチ [sfGAMsCdoVg].flac", image: "images/Sol.jpg" },
-            { title: "常咲の庭", genre: "ソロ曲", src: "audio/常咲の庭 [oUNvOafaNIk].flac", image: "images/Luna.jpg" },
-            { title: "Damascus Cooktail", genre: "ソロ曲", src: "audio/Damascus Cocktail [R05DW9F2kdc].flac", image: "images/Sol.jpg" },
-            { title: "星をめざして", genre: "ソロ曲", src: "audio/星をめざして [4dP9iLn7Mcs].flac", image: "images/STELLA.jpg" },
-            { title: "SOS", genre: "ソロ曲", src: "audio/SOS [g2z4dFH-kD0].flac", image: "images/Sol.jpg" },
-            { title: "Going my way", genre: "ソロ曲", src: "audio/Going my way [Kg7IV80d-Aw].flac", image: "images/Luna.jpg" },
-            { title: "statice", genre: "ソロ曲", src: "audio/statice [4MCcDMqPehA].flac", image: "images/Sol.jpg" },
-            { title: "夢見鳥", genre: "ソロ曲", src: "audio/夢見鳥 [2hQEVSFaQV4].flac", image: "images/STELLA.jpg" },
-            { title: "あおぞらサイダー", genre: "ソロ曲", src: "audio/あおぞらサイダー [DJU-wqB-Z0c].flac", image: "images/Sol.jpg" },
-            { title: "わたしの主人公はわたしだから！", genre: "ソロ曲", src: "audio/わたしの主人公はわたしだから！ [a1i8KSBiDzQ].flac", image: "images/Luna.jpg" },
-            { title: "フェアリー・ガール", genre: "ソロ曲", src: "audio/フェアリー・ガール [U9DGtsSZC6c].flac", image: "images/シーズソロ.jpg" },
-            { title: "Look up to the sky", genre: "ソロ曲", src: "audio/Look up to the sky [IYjbadrSTCI].flac", image: "images/シーズソロ.jpg" },
-            { title: "神様は死んだ、って", genre: "ソロ曲", src: "audio/神様は死んだ、って (2024 Remastering Ver.) [4ftrmgThjcY].flac", image: "images/コメティックソロ.jpg" },
+            { title: "Migratory Echoes", genre: "シャイニーカラーズ", src: "audio/Migratory Echoes [pZFWSNYnxN4].flac", image: "images/ECHOES09.jpg", introMid: 3.0, introEnd: 8.2 },
+            { title: "プリズムフレア", genre: "シャイニーカラーズ", src: "audio/プリズムフレア -23 colors- [o1cSIJx-yHw].flac", image: "images/プリズムフレア.jpg", introEnd: 12.1 },
+            { title: "C'mon! Join Us", genre: "シャイニーカラーズ", src: "audio/C'mon! Join Us [Siq4jJ1RFMY].flac", image: "images/C'mon.jpg", introEnd: 13.8, introShort: 1.8, introMid: 4.2 },
+            { title: "愛なView", genre: "シャイニーカラーズ", src: "audio/愛なView [n4dlNkvwLyI].flac", image: "images/C'mon.jpg", introEnd: 4.0 },
+            { title: "Poison Berry Daughters", genre: "シャイニーカラーズ", src: "audio/Poison Berry Daughters [08yGaxb6jBo].flac", image: "images/HappySurpriseTrick!.jpg", start: 0.2, introEnd: 16.0 },
+            { title: "Borderline", genre: "シャイニーカラーズ", src: "audio/Borderline [WQkdwZD27ME].flac", image: "images/Borderline.jpg", introMid: 9.0, introEnd: 17.1 },
+            { title: "感謝のコントレイル", genre: "シャイニーカラーズ", src: "audio/感謝のコントレイル [THWHL4S3UpM].flac", image: "images/283体操.jpg", start: 1.2 },
+            { title: "ありったけの輝きで", genre: "ソロ曲", src: "audio/ありったけの輝きで [WMkSD5-lm6Q].flac", image: "images/STELLA.jpg", introMid: 6.0, introEnd: 19.2 },
+            { title: "スローモーション", genre: "ソロ曲", src: "audio/スローモーション [nZyNbYoqlxI].flac", image: "images/Luna.jpg", introEnd: 13.0, introMid: 3.0 },
+            { title: "HAREBARE!!", genre: "ソロ曲", src: "audio/HAREBARE!! [lw2ViO7-040].flac", image: "images/Sol.jpg", introShort: 0.8, introMid: 2.0, introEnd: 3.3 },
+            { title: "アポイント・シグナル", genre: "ソロ曲", src: "audio/アポイント・シグナル [5ZlVL9HMroc].flac", image: "images/STELLA.jpg", introEnd: 14.2, introMid: 5.0 },
+            { title: "雪・月・風・花", genre: "ソロ曲", src: "audio/雪・月・風・花 [mnkKbnWmJqg].flac", image: "images/Luna.jpg", introEnd: 16.5, introMid: 4.5 },
+            { title: "誰ソ彼アイデンティティー", genre: "ソロ曲", src: "audio/誰ソ彼アイデンティティー [sdsxf89-3DY].flac", image: "images/Luna.jpg", start: 1.1, introMid: 3.0, introEnd: 18.2 },
+            { title: "プラスチック・アンブレラ", genre: "ソロ曲", src: "audio/プラスチック・アンブレラ (2022 Ver.) [xkNmOk9yQ8g].flac", image: "images/Luna.jpg", introMid: 3.0, introEnd: 18.0 },
+            { title: "千夜アリア", genre: "ソロ曲", src: "audio/千夜アリア [Bhn7kN-rSu0].flac", image: "images/Sol.jpg", start: 0.2, introEnd: 19.0, introMid: 4.0 },
+            { title: "Sweet Memories", genre: "ソロ曲", src: "audio/Sweet Memories [f4vZtYqzXvc].flac", image: "images/STELLA.jpg", introMid: 3.0, introEnd: 22.3 },
+            { title: "また明日", genre: "ソロ曲", src: "audio/また明日 [P7j2qGoipys].flac", image: "images/Luna.jpg", introMid: 2.5, introEnd: 18.5 },
+            { title: "Darling you!", genre: "ソロ曲", src: "audio/Darling you! [HSw_sVUiAA0].flac", image: "images/Sol.jpg", introEnd: 8.8, introMid: 2.8 },
+            { title: "ハナマルバッジ", genre: "ソロ曲", src: "audio/ハナマルバッジ [_LQZ4HUQESU].flac", image: "images/STELLA.jpg", shorten: 180, introEnd: 7.0 },
+            { title: "チョコデート・サンデー", genre: "ソロ曲", src: "audio/チョコデート・サンデー [JUvpDPykqnw].flac", image: "images/STELLA.jpg", start: 0.05, introEnd: 18.0, introMid: 2.8 },
+            { title: "過純性ブリーチ", genre: "ソロ曲", src: "audio/過純性ブリーチ [sfGAMsCdoVg].flac", image: "images/Sol.jpg", introMid: 6.0, introEnd: 14.8 },
+            { title: "常咲の庭", genre: "ソロ曲", src: "audio/常咲の庭 [oUNvOafaNIk].flac", image: "images/Luna.jpg", introEnd: 14.0 },
+            { title: "Damascus Cooktail", genre: "ソロ曲", src: "audio/Damascus Cocktail [R05DW9F2kdc].flac", image: "images/Sol.jpg", introEnd: 15.5 },
+            { title: "星をめざして", genre: "ソロ曲", src: "audio/星をめざして [4dP9iLn7Mcs].flac", image: "images/STELLA.jpg", shorten: 100, introMid: 2.5, introEnd: 13.1 },
+            { title: "SOS", genre: "ソロ曲", src: "audio/SOS [g2z4dFH-kD0].flac", image: "images/Sol.jpg", start: 0.8, },
+            { title: "Going my way", genre: "ソロ曲", src: "audio/Going my way [Kg7IV80d-Aw].flac", image: "images/Luna.jpg", introShort: 3.0, introMid: 12.0, introEnd: 30.0 },
+            { title: "statice", genre: "ソロ曲", src: "audio/statice [4MCcDMqPehA].flac", image: "images/Sol.jpg", introMid: 4.2, introEnd: 23.1 },
+            { title: "夢見鳥", genre: "ソロ曲", src: "audio/夢見鳥 [2hQEVSFaQV4].flac", image: "images/STELLA.jpg", introEnd: 12.0, introMid: 5.0 },
+            { title: "あおぞらサイダー", genre: "ソロ曲", src: "audio/あおぞらサイダー [DJU-wqB-Z0c].flac", image: "images/Sol.jpg", introEnd: 14.1, introMid: 3.0 },
+            { title: "わたしの主人公はわたしだから！", genre: "ソロ曲", src: "audio/わたしの主人公はわたしだから！ [a1i8KSBiDzQ].flac", image: "images/Luna.jpg", introMid: 3.0, introEnd: 16.0 },
+            { title: "フェアリー・ガール", genre: "ソロ曲", src: "audio/フェアリー・ガール [U9DGtsSZC6c].flac", image: "images/シーズソロ.jpg", introEnd: 12.2 },
+            { title: "Look up to the sky", genre: "ソロ曲", src: "audio/Look up to the sky [IYjbadrSTCI].flac", image: "images/シーズソロ.jpg", shorten: 100, introEnd: 19.0, introMid: 5.0 },
+            { title: "神様は死んだ、って", genre: "ソロ曲", src: "audio/神様は死んだ、って (2024 Remastering Ver.) [4ftrmgThjcY].flac", image: "images/コメティックソロ.jpg", introEnd: 23.1, introMid: 7.0 },
             { title: "無垢", genre: "ソロ曲", src: "audio/無垢 [DfiUOdO8otA].flac", image: "images/コメティックソロ.jpg" },
-            { title: "夢模様キャンバス", genre: "ソロ曲", src: "audio/夢模様キャンバス [lQoDmoMrifo].flac", image: "images/コメティックソロ.jpg" },
-            { title: "1/3", genre: "ソロ曲", src: "audio/13 [zj84AbjJndc].flac", image: "images/コメティックソロ.jpg" },
-            { title: "メモワール・アンタクト", genre: "ソロ曲", src: "audio/メモワール・アンタクト [M6R4g87-qzc].flac", image: "images/騎士団のヴェール.jpg" },
-            { title: "月影のアンシェネ", genre: "ソロ曲", src: "audio/月影のアンシェネ [EkmwRqIQcqk].flac", image: "images/騎士団のヴェール.jpg" },
-            { title: "Once Upon a Secret", genre: "ソロ曲", src: "audio/Once Upon a Secret [t7xX7fagpPM].flac", image: "images/騎士団のヴェール.jpg" },
-            { title: "killer×Mission", genre: "ユニット越境", src: "audio/Killer×Mission [FRJ80iioDZM].flac", image: "images/キラーミッション.jpg" },
-            { title: "相合学舎", genre: "ユニット越境", src: "audio/相合学舎 [rNgLMIZwLBU].flac", image: "images/相合学舎.jpg" },
-            { title: "Secret utopIA", genre: "ユニット越境", src: "audio/Secret utopIA [2ljCa8C7lVY].flac", image: "images/ユートピア.jpg" },
-            { title: "Pioneer Impact", genre: "ユニット越境", src: "audio/Pioneer Impact [P3k_y8IARec].flac", image: "images/円環01.jpg" },
-            { title: "迅雷鉄火", genre: "ユニット越境", src: "audio/迅雷鉄火 [46IFe_HXoOs].flac", image: "images/円環02.jpg" },
-            { title: "リフレインブレイン", genre: "ユニット越境", src: "audio/リフレインブレイン [wK2Sf0BRpwM].flac", image: "images/円環03.jpg" },
-            { title: "Sparkle", genre: "ユニット越境", src: "audio/Sparkle [Fl3WSCUOJtY].flac", image: "images/円環04.jpg" },
-            { title: "カウントダウンラブ", genre: "PJ: REFRAC7IONS", src: "audio/カウントダウンラブ [jrM0xASC6os].flac", image: "images/アイキュー.jpg" },
-            { title: "KAWAII♡めたもる交響曲", genre: "PJ: REFRAC7IONS", src: "audio/KAWAII♡めたもる交響曲 [VxPRXKxEn3Q].flac", image: "images/アイキュー.jpg" },
-            { title: "Karma", genre: "PJ: REFRAC7IONS", src: "audio/Karma [cinKT-bx-uU].flac", image: "images/Fumage.jpg" },
-            { title: "Naraku", genre: "PJ: REFRAC7IONS", src: "audio/Naraku [jnVkaZzxaZs].flac", image: "images/Fumage.jpg" },
-            { title: "ボーダーレス・ノンストレス", genre: "PJ: REFRAC7IONS", src: "audio/ボーダーレス・ノンストレス [_jN1gBX6dLc].flac", image: "images/ソニハ.jpg" },
-            { title: "Oh Yeah!!", genre: "PJ: REFRAC7IONS", src: "audio/Oh Yeah!! [HtNlApmB_5A].flac", image: "images/ソニハ.jpg" },
-            { title: "SUPER DUPER DREAMER", genre: "PJ: REFRAC7IONS", src: "audio/SUPER DUPER DREAMER [XvuYNXsvKXo].flac", image: "images/シグマ.jpg" },
-            { title: "BEAST MODE", genre: "PJ: REFRAC7IONS", src: "audio/BEAST MODE [r9z4v-QRm7g].flac", image: "images/シグマ.jpg" },
-            { title: "Ring Ring Ringの魔法", genre: "PJ: REFRAC7IONS", src: "audio/Ring Ring Ringの魔法 [vx64MJBt5HA].flac", image: "images/たりら.jpg" },
-            { title: "街角メランコリー", genre: "PJ: REFRAC7IONS", src: "audio/街角メランコリー [dyquifCyBzI].flac", image: "images/たりら.jpg" },
-            { title: "散花-sanka-", genre: "PJ: REFRAC7IONS", src: "audio/散花-sanka- [a98-6enuHKs].flac", image: "images/彼岸流.jpg" },
-            { title: "紅花-benibana-", genre: "PJ: REFRAC7IONS", src: "audio/紅花-benibana- [FER7YlF69RQ].flac", image: "images/彼岸流.jpg" },
-            { title: "Tokyo自由系*ガール", genre: "PJ: REFRAC7IONS", src: "audio/Tokyo自由系＊ガール [RpJLlxHleq4].flac", image: "images/ノフィロ.jpg" },
-            { title: "My time", genre: "PJ: REFRAC7IONS", src: "audio/My time [fdTy6L3nl7U].flac", image: "images/ノフィロ.jpg" },
-            { title: "プラニスフィア ~planisphere~", genre: "その他", src: "audio/プラニスフィア ～planisphere～ [tRbXq3YHuTI].flac", image: "images/STELLA.jpg" },
-            { title: "リフレクトサイン", genre: "その他", src: "audio/リフレクトサイン (2022 Ver.) [NP6DbedxYEA].flac", image: "images/Luna.jpg" },
-            { title: "SOLAR WAY", genre: "その他", src: "audio/SOLAR WAY [jsG1W1IRGTQ].flac", image: "images/Sol.jpg" },
-            { title: "ホムラインビテーション", genre: "その他", src: "audio/ホムラインビテーション [AAw9U4NFDZM].flac", image: "images/ホムラ.jpg" },
+            { title: "夢模様キャンバス", genre: "ソロ曲", src: "audio/夢模様キャンバス [lQoDmoMrifo].flac", image: "images/コメティックソロ.jpg", introEnd: 14.2 },
+            { title: "1/3", genre: "ソロ曲", src: "audio/13 [zj84AbjJndc].flac", image: "images/コメティックソロ.jpg", introShort: 3.0, introMid: 6.0, introEnd: 29.0 },
+            { title: "メモワール・アンタクト", genre: "ソロ曲", src: "audio/メモワール・アンタクト [M6R4g87-qzc].flac", image: "images/騎士団のヴェール.jpg", introMid: 3.0, introEnd: 19.6 },
+            { title: "月影のアンシェネ", genre: "ソロ曲", src: "audio/月影のアンシェネ [EkmwRqIQcqk].flac", image: "images/騎士団のヴェール.jpg", introMid: 3.0, introEnd: 13.0 },
+            { title: "Once Upon a Secret", genre: "ソロ曲", src: "audio/Once Upon a Secret [t7xX7fagpPM].flac", image: "images/騎士団のヴェール.jpg", start: 0.2, introMid: 3.0, introEnd: 14.0 },
+            { title: "killer×Mission", genre: "ユニット越境", src: "audio/Killer×Mission [FRJ80iioDZM].flac", image: "images/キラーミッション.jpg", introMid: 4.0, introEnd: 18.0 },
+            { title: "相合学舎", genre: "ユニット越境", src: "audio/相合学舎 [rNgLMIZwLBU].flac", image: "images/相合学舎.jpg", shorten: 150, introMid: 2.5, introEnd: 12.1 },
+            { title: "Secret utopIA", genre: "ユニット越境", src: "audio/Secret utopIA [2ljCa8C7lVY].flac", image: "images/ユートピア.jpg", introEnd: 19.0, introMid: 3.3 },
+            { title: "Pioneer Impact", genre: "ユニット越境", src: "audio/Pioneer Impact [P3k_y8IARec].flac", image: "images/円環01.jpg", introShort: 2.0, introMid: 3.0, introEnd: 11.1 },
+            { title: "迅雷鉄火", genre: "ユニット越境", src: "audio/迅雷鉄火 [46IFe_HXoOs].flac", image: "images/円環02.jpg", introEnd: 19.5 },
+            { title: "リフレインブレイン", genre: "ユニット越境", src: "audio/リフレインブレイン [wK2Sf0BRpwM].flac", image: "images/円環03.jpg", introMid: 6.5, introEnd: 14.2 },
+            { title: "Sparkle", genre: "ユニット越境", src: "audio/Sparkle [Fl3WSCUOJtY].flac", image: "images/円環04.jpg", start: 0.4 },
+            { title: "カウントダウンラブ", genre: "PJ: REFRAC7IONS", src: "audio/カウントダウンラブ [jrM0xASC6os].flac", image: "images/アイキュー.jpg", introEnd: 21.1 },
+            { title: "KAWAII♡めたもる交響曲", genre: "PJ: REFRAC7IONS", src: "audio/KAWAIIめたもる交響曲 [VxPRXKxEn3Q].flac", image: "images/アイキュー.jpg" },
+            { title: "Karma", genre: "PJ: REFRAC7IONS", src: "audio/Karma [cinKT-bx-uU].flac", image: "images/Fumage.jpg", introEnd: 10.8 },
+            { title: "Naraku", genre: "PJ: REFRAC7IONS", src: "audio/Naraku [jnVkaZzxaZs].flac", image: "images/Fumage.jpg", introMid: 3.0, introEnd: 21.3 },
+            { title: "ボーダーレス・ノンストレス", genre: "PJ: REFRAC7IONS", src: "audio/ボーダーレス・ノンストレス [_jN1gBX6dLc].flac", image: "images/ソニハ.jpg", introShort: 0.8, introEnd: 13.5 },
+            { title: "Oh Yeah!!", genre: "PJ: REFRAC7IONS", src: "audio/Oh Yeah!! [HtNlApmB_5A].flac", image: "images/ソニハ.jpg", introMid: 6.0, introEnd: 22.0 },
+            { title: "SUPER DUPER DREAMER", genre: "PJ: REFRAC7IONS", src: "audio/SUPER DUPER DREAMER [XvuYNXsvKXo].flac", image: "images/シグマ.jpg", introShort: 1.7, introMid: 3.5, introEnd: 10.0 },
+            { title: "BEAST MODE", genre: "PJ: REFRAC7IONS", src: "audio/BEAST MODE [r9z4v-QRm7g].flac", image: "images/シグマ.jpg", introEnd: 9.2, introMid: 3.2 },
+            { title: "Ring Ring Ringの魔法", genre: "PJ: REFRAC7IONS", src: "audio/Ring Ring Ringの魔法 [vx64MJBt5HA].flac", image: "images/たりら.jpg", introMid: 3.0, introEnd: 24.0 },
+            { title: "街角メランコリー", genre: "PJ: REFRAC7IONS", src: "audio/街角メランコリー [dyquifCyBzI].flac", image: "images/たりら.jpg", introShort: 1.9, introMid: 3.8, introEnd: 19.0 },
+            { title: "散花-sanka-", genre: "PJ: REFRAC7IONS", src: "audio/散花-sanka- [a98-6enuHKs].flac", image: "images/彼岸流.jpg", introEnd: 22.5 },
+            { title: "紅花-benibana-", genre: "PJ: REFRAC7IONS", src: "audio/紅花-benibana- [FER7YlF69RQ].flac", image: "images/彼岸流.jpg", start: 0.4, introEnd: 16.5 },
+            { title: "Tokyo自由系*ガール", genre: "PJ: REFRAC7IONS", src: "audio/Tokyo自由系＊ガール [RpJLlxHleq4].flac", image: "images/ノフィロ.jpg", introMid: 3.0, introEnd: 30.3 },
+            { title: "My time", genre: "PJ: REFRAC7IONS", src: "audio/My time [fdTy6L3nl7U].flac", image: "images/ノフィロ.jpg", introMid: 3.0, introEnd: 10.0 },
+            { title: "プラニスフィア ~planisphere~", genre: "その他", src: "audio/プラニスフィア ～planisphere～ [tRbXq3YHuTI].flac", image: "images/STELLA.jpg", introMid: 3.0, introEnd: 18.0 },
+            { title: "リフレクトサイン", genre: "その他", src: "audio/リフレクトサイン (2022 Ver.) [NP6DbedxYEA].flac", image: "images/Luna.jpg", introMid: 8.0, introEnd: 24 },
+            { title: "SOLAR WAY", genre: "その他", src: "audio/SOLAR WAY [jsG1W1IRGTQ].flac", image: "images/Sol.jpg", introEnd: 3.3 },
+            { title: "ホムラインビテーション", genre: "その他", src: "audio/ホムラインビテーション [AAw9U4NFDZM].flac", image: "images/ホムラ.jpg", introShort: 2.3, introMid: 4.1, introEnd: 23.0 },
             { title: "輝きにかわる", genre: "その他", src: "audio/輝きにかわる [gBAzYE_pvEg].flac", image: "images/輝きに変わる.jpg" },
-            { title: "ONE STAR", genre: "その他", src: "audio/ONE STAR [QkoLhsHWMVQ].flac", image: "images/OneStar.jpg" },
-            { title: "GOTCHA", genre: "その他", src: "audio/GOTCHA [jCwcC_ArsEU].flac", image: "images/GOTCHA.jpg" },
-            { title: "ねぇ、ねぇ、ねぇ", genre: "その他", src: "audio/ねぇ、ねぇ、ねぇ [-rT9ozKFQ84].flac", image: "images/HappySurpriseTrick!.jpg" },
-            { title: "OPEN the New world", genre: "その他", src: "audio/OPEN the New world [Xqcd9OkmCEU].flac", image: "images/HappySurpriseTrick!.jpg" },
-            { title: "Midnight parade!", genre: "その他", src: "audio/Midnight parade! [b1e769b0QWw].flac", image: "images/HappySurpriseTrick!.jpg" },
-            { title: "CANDY UNIVERSE", genre: "その他", src: "audio/CANDY UNIVERSE [heYJOeg_xfs].flac", image: "images/HappySurpriseTrick!.jpg" },
-            { title: "サマーサマーオーシャンパーリィバケーション", genre: "その他", src: "audio/サマーサマーオーシャンパーリィバケーション [4cALKy06X1s].flac", image: "images/C'mon.jpg" },
-            { title: "クローバー", genre: "その他", src: "audio/クローバー [v2RqReZT96E].flac", image: "images/Borderline.jpg" },
-            { title: "Summer Night Paradise", genre: "その他", src: "audio/Summer Night Paradise [qWz_-nqfBbg].flac", image: "images/Borderline.jpg" },
-            { title: "キズナシェアリング", genre: "その他", src: "audio/キズナシェアリング [K2jPxwEWhO0].flac", image: "images/キズナシェアリング.jpg" },
-            { title: "Lit up my sky", genre: "その他", src: "audio/Lit up my sky [eP88S3lZ_54].flac", image: "images/LitUpMySky.jpg" },
-            { title: "永遠色アーチ", genre: "その他", src: "audio/永遠色アーチ [jvYfhJ8IEvY].flac", image: "images/永遠色アーチ.jpg" },
+            { title: "ONE STAR", genre: "その他", src: "audio/ONE STAR [QkoLhsHWMVQ].flac", image: "images/OneStar.jpg", start: .5 },
+            { title: "GOTCHA", genre: "その他", src: "audio/GOTCHA [jCwcC_ArsEU].flac", image: "images/GOTCHA.jpg", introEnd: 6.2, shorten: 200 },
+            { title: "ねぇ、ねぇ、ねぇ", genre: "その他", src: "audio/ねぇ、ねぇ、ねぇ [-rT9ozKFQ84].flac", image: "images/HappySurpriseTrick!.jpg", introMid: 3.3, introEnd: 18.3 },
+            { title: "OPEN the New world", genre: "その他", src: "audio/OPEN the New world [Xqcd9OkmCEU].flac", image: "images/HappySurpriseTrick!.jpg", introMid: 12.0, introEnd: 22.8 },
+            { title: "Midnight parade!", genre: "その他", src: "audio/Midnight parade! [b1e769b0QWw].flac", image: "images/HappySurpriseTrick!.jpg", introMid: 2.8, introEnd: 16.0 },
+            { title: "CANDY UNIVERSE", genre: "その他", src: "audio/CANDY UNIVERSE [heYJOeg_xfs].flac", image: "images/HappySurpriseTrick!.jpg", introEnd: 16.0, introMid: 8.1 },
+            { title: "サマーサマーオーシャンパーリィバケーション", genre: "その他", src: "audio/サマーサマーオーシャンパーリィバケーション [4cALKy06X1s].flac", image: "images/C'mon.jpg", introEnd: 21.0, introMid: 7.0 },
+            { title: "クローバー", genre: "その他", src: "audio/クローバー [v2RqReZT96E].flac", image: "images/Borderline.jpg", introEnd: 12.9, introMid: 3.3 },
+            { title: "Summer Night Paradise", genre: "その他", src: "audio/Summer Night Paradise [qWz_-nqfBbg].flac", image: "images/Borderline.jpg", introEnd: 12.0, introMid: 3.3 },
+            { title: "キズナシェアリング", genre: "その他", src: "audio/キズナシェアリング [K2jPxwEWhO0].flac", image: "images/キズナシェアリング.jpg", start: 1.2 },
+            { title: "Lit up my sky", genre: "その他", src: "audio/Lit up my sky [eP88S3lZ_54].flac", image: "images/LitUpMySky.jpg", introMid: 3.0, introEnd: 12.0 },
+            { title: "永遠色アーチ", genre: "その他", src: "audio/永遠色アーチ [jvYfhJ8IEvY].flac", image: "images/永遠色アーチ.jpg", introMid: 3.0, introEnd: 14.8 },
 
         ];
 
@@ -588,16 +620,37 @@
         let currentQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
+        let resultIdolImageSrc = "";
 
+        // ▼▼ 追加：獲得ポイントと再生回数の管理用変数 ▼▼
+        let maxTotalScore = 0; // そのゲームの最大可能スコア (問題数 × 3)
+        let currentQuestionPotentialScore = 3; // 今の問題の獲得予定ポイント
+        let levelPlayCounts = { "1000": 2, "mid_intro": 2, "intro": 2 }; // 各レベルの残り再生回数
+
+        let questionHistory = [];
         let audioPlayer = new Audio();
         let stopTimer = null;
         let remainingTime = 3000;
         let lastPlayTime = 0;
 
-        const correctSE = new Audio('audio/correct.flac');
-        const incorrectSE = new Audio('audio/incorrect.flac');
+        const correctSE = new Audio('audio/correct.mp3');
+        const incorrectSE = new Audio('audio/incorrect.mp3');
 
 
+
+        // ==========================================
+        // 🖼️ 画像プリロード（ジャケ写・アイドル画像の表示ラグ対策）
+        // ==========================================
+        const preloadedImages = new Set(); // 二重にダウンロードしないよう記録
+        function preloadImage(url) {
+            if (!url || preloadedImages.has(url)) return;
+            preloadedImages.add(url);
+            const img = new Image();
+            img.src = url;
+        }
+        function preloadImageList(urls) {
+            (urls || []).forEach(preloadImage);
+        }
 
         function normalizeText(str) {
             if (!str) return "";
@@ -685,6 +738,18 @@
                 width: '100%',
                 matcher: customSearchMatcher
             });
+            // ▼▼ 追加：カスタムモード用のプルダウン初期化 ▼▼
+            const customSelect = $('#custom-song-select');
+            songDatabase.forEach(song => {
+                customSelect.append($('<option>').val(song.title).text(song.title));
+            });
+            customSelect.select2({
+                placeholder: "遊びたい曲を検索して選択",
+                allowClear: true,
+                width: '100%',
+                matcher: customSearchMatcher
+            });
+
         });
 
         // ==========================================
@@ -754,19 +819,150 @@
             });
             // ▲▲ ここまで ▲▲
 
+
+
             currentQuestions = shuffled.slice(0, maxQuestions);
             currentQuestionIndex = 0;
             score = 0;
+            maxTotalScore = currentQuestions.length * 3; // ★追加：最大スコアを計算
+            questionHistory = []; //履歴のリセット
+
+
+            // ▼▼ 曲のジャケ写を先読み ▼▼
+            preloadImageList(currentQuestions.map(song => song.image));
+
+            // ▼▼ 変更：結果画面のアイドル画像は「今」1枚だけ抽選して確定させ、
+            //          それだけを最優先で先読みする（毎回大量に読み込むのをやめる） ▼▼
+            let targetImages = [];
+            if (genreResultData[selectedGenre] && genreResultData[selectedGenre].images) {
+                targetImages = genreResultData[selectedGenre].images;
+            } else {
+                for (const key in genreResultData) {
+                    if (genreResultData[key] && genreResultData[key].images) {
+                        targetImages = targetImages.concat(genreResultData[key].images);
+                    }
+                }
+            }
+            resultIdolImageSrc = targetImages.length > 0
+                ? targetImages[Math.floor(Math.random() * targetImages.length)]
+                : "";
+            preloadImage(resultIdolImageSrc);
+            preloadImage("images/総合評価.png");
+            // ▲▲ ここまで ▲▲
+
+            showScreen('quiz-screen');
+            updateQuizUI();
 
             showScreen('quiz-screen');
             updateQuizUI();
         }
 
+
+        // ▼▼ 追加：カスタムモードの開始処理 ▼▼
+        function startCustomGame() {
+            // プルダウンで選ばれた曲名の配列（複数）を取得
+            const selectedTitles = $('#custom-song-select').val();
+
+            if (!selectedTitles || selectedTitles.length === 0) {
+                alert("遊びたい曲を選択してください。");
+                return;
+            }
+
+            // 選ばれた曲名からデータを抽出し、順番をシャッフルする
+            let customQuestions = selectedTitles.map(title => songDatabase.find(s => s.title === title));
+
+            currentQuestions = customQuestions.sort(() => 0.5 - Math.random());
+            currentQuestionIndex = 0;
+            score = 0;
+            maxTotalScore = currentQuestions.length * 3; // ★追加：最大スコアを計算
+            questionHistory = []; //履歴のリセット
+
+            // ジャケ写先読み
+            preloadImageList(currentQuestions.map(song => song.image));
+
+            // 背景色はデフォルト
+            document.body.style.background = "";
+
+            // アイドル画像の抽選（全ジャンルからランダム）
+            let targetImages = [];
+            for (const key in genreResultData) {
+                if (genreResultData[key] && genreResultData[key].images) {
+                    targetImages = targetImages.concat(genreResultData[key].images);
+                }
+            }
+            resultIdolImageSrc = targetImages.length > 0
+                ? targetImages[Math.floor(Math.random() * targetImages.length)]
+                : "";
+            preloadImage(resultIdolImageSrc);
+            preloadImage("images/総合評価.png");
+
+            // 解答プルダウンの中身は「全曲」から選べるように再生成する
+            const answerSelect = $('#answer-select');
+            answerSelect.empty();
+            answerSelect.append('<option value="">-- 曲名を検索・選択 --</option>');
+
+            const groupedSongs = {};
+            songDatabase.forEach(song => {
+                if (!groupedSongs[song.genre]) {
+                    groupedSongs[song.genre] = [];
+                }
+                groupedSongs[song.genre].push(song.title);
+            });
+
+            for (const genre in groupedSongs) {
+                const optgroup = $('<optgroup>').attr('label', genre);
+                groupedSongs[genre].forEach(title => {
+                    optgroup.append($('<option>').val(title).text(title));
+                });
+                answerSelect.append(optgroup);
+            }
+
+            answerSelect.select2({
+                placeholder: "-- 曲名を検索・選択 --",
+                allowClear: true,
+                width: '100%',
+                matcher: customSearchMatcher
+            });
+
+            showScreen('quiz-screen');
+            updateQuizUI();
+        }
+
+        // ▼▼ 追加：難易度ボタンに残り回数を表示する ▼▼
+        function updateLevelButtonText() {
+            const btn3 = document.querySelector('.level-btn[data-value="1000"]');
+            const btn2 = document.querySelector('.level-btn[data-value="mid_intro"]');
+            const btn1 = document.querySelector('.level-btn[data-value="intro"]');
+
+            if (btn3) btn3.innerHTML = `レベル3<br><span style="font-size:11px; font-weight:normal;">(あと${levelPlayCounts["1000"]}回)</span>`;
+            if (btn2) btn2.innerHTML = `レベル2<br><span style="font-size:11px; font-weight:normal;">(あと${levelPlayCounts["mid_intro"]}回)</span>`;
+            if (btn1) btn1.innerHTML = `レベル1<br><span style="font-size:11px; font-weight:normal;">(あと${levelPlayCounts["intro"]}回)</span>`;
+        }
+
+
+
+
+
+
         function updateQuizUI() {
+
+            // ▼▼ 追加：新しい問題になったらポイントと回数をリセット ▼▼
+            currentQuestionPotentialScore = 3;
+            levelPlayCounts = { "1000": 2, "mid_intro": 2, "intro": 2 };
+            updateLevelButtonText(); // ボタンの文字を更新
+
+
             document.getElementById('quiz-status').innerText = `第 ${currentQuestionIndex + 1} 問 / 全 ${currentQuestions.length} 問`;
 
             // 解答欄のリセット (Select2の見た目もリセット)
             $('#answer-select').val(null).trigger('change');
+
+
+            // ▼▼ 追加：新しい問題に行ったらレベル3に戻す ▼▼
+            document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
+            const level3Btn = document.querySelector('.level-btn[data-value="1000"]');
+            if (level3Btn) level3Btn.classList.add('active');
+            document.getElementById('quiz-level').value = "1000";
 
             resetTimer();
 
@@ -780,16 +976,63 @@
             };
         }
 
+
+        // ▼▼ 追加：難易度ボタンを押した時の処理 ▼▼
+        function selectLevel(clickedBtn) {
+            // 1. 全ての難易度ボタンから active クラス（選択状態の色）を外す
+            document.querySelectorAll('.level-btn').forEach(btn => btn.classList.remove('active'));
+
+            // 2. クリックされたボタンに active クラスをつける
+            clickedBtn.classList.add('active');
+
+            // 3. 隠し項目に、ボタンに設定された値（data-value）をセットする
+            document.getElementById('quiz-level').value = clickedBtn.getAttribute('data-value');
+
+            // 4. 今まで通り、再生位置とタイマーをリセットする
+            resetTimer();
+        }
+
+
+
+
+
+
+
+
         function resetTimer() {
-            remainingTime = parseInt(document.getElementById('quiz-level').value);
+            const levelValue = document.getElementById('quiz-level').value;
+            const currentSong = currentQuestions[currentQuestionIndex];
+
+            // 曲の開始位置（設定がなければ0秒）
+            const startTime = currentSong && currentSong.start ? currentSong.start : 0;
+
+            if (levelValue === "intro") {
+                const endTime = currentSong && currentSong.introEnd ? currentSong.introEnd : (startTime + 3);
+                remainingTime = (endTime - startTime) * 1000;
+            } else if (levelValue === "mid_intro") {
+                const endTime = currentSong && currentSong.introMid ? currentSong.introMid : (startTime + 2.0);
+                remainingTime = (endTime - startTime) * 1000;
+            } else {
+                // ▼▼ 変更：レベル3用の個別設定（introShort）があればそれを優先 ▼▼
+                if (currentSong && currentSong.introShort) {
+                    // introShort（レベル3の終了秒数）が設定されている場合の計算
+                    remainingTime = (currentSong.introShort - startTime) * 1000;
+                } else {
+                    // 設定がない場合はプルダウンの固定秒数（例：1000ミリ秒）
+                    remainingTime = parseInt(levelValue);
+
+                    // 特定の曲だけ制限時間を削る処理（引き続き使えます）
+                    if (currentSong && currentSong.shorten) {
+                        remainingTime -= currentSong.shorten;
+                    }
+                }
+            }
+
             document.getElementById('quiz-play-btn').innerText = "▶ 曲を再生する";
 
             audioPlayer.pause();
 
-            // ▼▼ 変更：0秒ではなく曲ごとの開始位置に戻す ▼▼
             if (currentQuestions.length > 0) {
-                const startTime = currentQuestions[currentQuestionIndex].start || 0;
-                // エラー回避のため try-catch で囲む
                 try {
                     audioPlayer.currentTime = startTime;
                 } catch (e) { }
@@ -802,22 +1045,56 @@
 
         function toggleQuizAudio() {
             const btn = document.getElementById('quiz-play-btn');
+            const currentLevel = document.getElementById('quiz-level').value;
 
             if (audioPlayer.paused) {
                 if (remainingTime <= 0) return;
 
-                audioPlayer.play().then(() => {
-                    btn.innerText = "⏸ 停止";
-                    lastPlayTime = Date.now();
+                // ▼▼ 追加：新しく再生を開始する時の回数チェックと減点 ▼▼
+                if (btn.innerText === "▶ 曲を再生する") {
+                    if (levelPlayCounts[currentLevel] <= 0) {
+                        alert("このレベルの再生回数（2回）を使い切りました。他のレベルかパスを選んでください。");
+                        return;
+                    }
 
-                    stopTimer = setTimeout(() => {
-                        audioPlayer.pause();
-                        btn.innerText = "時間切れ (解答してください)";
-                        remainingTime = 0;
-                    }, remainingTime);
-                }).catch(e => {
-                    alert("音声ファイルが見つからないか、自動再生がブロックされています。");
-                });
+                    // 回数を1減らして画面を更新
+                    levelPlayCounts[currentLevel]--;
+                    updateLevelButtonText();
+
+                    // 一番甘いヒント（低いレベル）に合わせて獲得ポイントを下げる
+                    if (currentLevel === "mid_intro") {
+                        currentQuestionPotentialScore = Math.min(currentQuestionPotentialScore, 2);
+                    } else if (currentLevel === "intro") {
+                        currentQuestionPotentialScore = Math.min(currentQuestionPotentialScore, 1);
+                    }
+                }
+                // ▲▲ ここまで ▲▲
+
+                btn.innerText = "⏳ 準備中...";
+                btn.disabled = true;
+
+                setTimeout(() => {
+                    audioPlayer.play().then(() => {
+                        btn.innerText = "⏸ 停止";
+                        btn.disabled = false;
+                        lastPlayTime = Date.now();
+
+                        stopTimer = setTimeout(() => {
+                            audioPlayer.pause();
+                            btn.innerText = "時間切れ (解答してください)";
+                            remainingTime = 0;
+
+                            document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+
+                    
+
+                        }, remainingTime);
+                    }).catch(e => {
+                        btn.disabled = false;
+                        alert("音声ファイルが見つからないか、自動再生がブロックされています。");
+                    });
+                }, 200);
+
             } else {
                 audioPlayer.pause();
                 clearTimeout(stopTimer);
@@ -832,10 +1109,10 @@
             const currentSong = currentQuestions[currentQuestionIndex];
             const correctTitle = currentSong.title;
 
-            // 間違えた曲リストに追加
-            if (typeof wrongSongs !== 'undefined') {
-                wrongSongs.push(correctTitle);
-            }
+            // ▼▼ 変更：パスの履歴を保存 ▼▼
+            questionHistory.push({ title: correctTitle, result: "⏩ パス" });
+
+
 
             // 解説画面の表示内容をセット
             document.getElementById('judge-text').innerText = "⏩ パスしました";
@@ -863,6 +1140,15 @@
             // ▼▼ 変更：0秒ではなく曲ごとの開始位置に巻き戻す ▼▼
             const startTime = currentSong.start || 0;
             audioPlayer.currentTime = startTime;
+
+            // ▼▼ 追加：最後の問題かどうかでボタンの文字を切り替える ▼▼
+            const nextBtn = document.getElementById('next-btn');
+            if (currentQuestionIndex === currentQuestions.length - 1) {
+                nextBtn.innerText = "結果発表へ";
+            } else {
+                nextBtn.innerText = "次の問題へ";
+            }
+
 
             showScreen('answer-screen');
         }
@@ -905,17 +1191,27 @@
 
             // 判定結果による処理の分岐
             if (isCorrect) {
-                judgeText.innerText = "⭕ 正解！";
+                // ▼▼ 変更：獲得ポイントを表示し、その分だけ加算する ▼▼
+                judgeText.innerText = `⭕ 正解！ (+${currentQuestionPotentialScore}点)`;
                 judgeText.style.color = "green";
                 correctSE.currentTime = 0;
                 correctSE.play();
-                score++;
+                score += currentQuestionPotentialScore;
+
+                // ▼▼ 追加：正解の履歴を保存 ▼▼
+                questionHistory.push({ title: correctTitle, result: `⭕ レベル${currentQuestionPotentialScore}で正解 (+${currentQuestionPotentialScore}点)` });
+
+
             } else {
                 judgeText.innerText = "❌ 不正解...";
                 judgeText.style.color = "red";
                 incorrectSE.currentTime = 0;
                 incorrectSE.play();
+
+                // ▼▼ 追加：不正解の履歴を保存 ▼▼
+                questionHistory.push({ title: correctTitle, result: "❌ 不正解" });
             }
+
 
             // 解説画面の曲名表示（データベース上の正解曲名を表示）
             document.getElementById('correct-song-title').innerText = `「${correctTitle}」`;
@@ -939,6 +1235,8 @@
 
             showScreen('answer-screen');
         }
+
+
 
         function toggleAudio() {
             const btn = document.getElementById('toggle-audio-btn');
@@ -968,66 +1266,38 @@
 
                 // 1. スコアの分子と分母をセット
                 document.getElementById('score-numerator').innerText = score;
-                document.getElementById('score-denominator').innerText = currentQuestions.length;
+                // ★ 修正：分母を問題数ではなく「満点 (maxTotalScore)」に設定
+                document.getElementById('score-denominator').innerText = maxTotalScore;
 
-                // 2. 復習リストの処理（変数が無くてもエラーで止まらない安全対策）
+                // 2. 出題履歴リストの処理
                 const reviewArea = document.getElementById('review-area');
                 const wrongList = document.getElementById('wrong-songs-list');
 
-                if (wrongList) wrongList.innerHTML = '';
-
-                // wrongSongsが存在している時だけ処理をする
-                if (typeof wrongSongs !== 'undefined' && wrongSongs.length > 0) {
-                    wrongSongs.forEach(song => {
+                if (wrongList) {
+                    wrongList.innerHTML = '';
+                    // 記録した履歴を1問ずつリストに追加
+                    questionHistory.forEach((item, index) => {
                         const li = document.createElement('li');
-                        li.innerText = song;
+                        li.style.marginBottom = "8px"; // 行間を少し空ける
+                        li.style.lineHeight = "1.4";
+
+                        // 結果に応じて文字の色を変える
+                        let resultColor = "#555";
+                        if (item.result.includes("⭕")) resultColor = "green";
+                        if (item.result.includes("❌")) resultColor = "red";
+
+                        li.innerHTML = `<strong>Q${index + 1}.</strong> <span style="color: ${resultColor}; font-weight: bold;">${item.result}</span><br><span style="font-size: 14px;">${item.title}</span>`;
                         wrongList.appendChild(li);
                     });
-                    if (reviewArea) reviewArea.style.display = 'block';
-                } else {
-                    if (reviewArea) reviewArea.style.display = 'none';
                 }
 
-                // 3. アイドル画像の設定（ジャンル指定に関わらず、全画像から集めてランダム選択）
-                const selectedGenre = document.getElementById('start-genre-filter').value;
-                let targetImages = [];
+                // 履歴エリアを表示
+                if (reviewArea) reviewArea.style.display = 'block';
 
-                // 1. まず、選ばれたジャンルの画像があればそれを候補に入れる
-                if (genreResultData[selectedGenre] && genreResultData[selectedGenre].images) {
-                    targetImages = targetImages.concat(genreResultData[selectedGenre].images);
-                }
+                // 3. アイドル画像の設定
+                document.getElementById('result-idol-image').src = resultIdolImageSrc;
 
-                // 2. もしジャンル画像が見つからない場合（「すべて」を選んだ場合など）、全ジャンルの画像を全て集める
-                if (targetImages.length === 0) {
-                    for (const key in genreResultData) {
-                        // default や他の項目も含めて、images配列を持っているものから全てかき集める
-                        if (genreResultData[key] && genreResultData[key].images) {
-                            targetImages = targetImages.concat(genreResultData[key].images);
-                        }
-                    }
-                }
-
-                // 3. 集めた候補の中からランダムに1枚選んで表示する
-                if (targetImages.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * targetImages.length);
-                    document.getElementById('result-idol-image').src = targetImages[randomIndex];
-                } else {
-                    document.getElementById('result-idol-image').src = "";
-                }
-
-                // 4. ランク判定
-                const accuracy = score / currentQuestions.length;
-                const rankText = document.getElementById('rank-text');
-
-                if (accuracy === 1) {
-                    rankText.innerText = "👑 パーフェクト！！";
-                } else if (accuracy >= 0.8) {
-                    rankText.innerText = "✨ あと一歩！";
-                } else if (accuracy >= 0.5) {
-                    rankText.innerText = "👍 ナイスファイト！";
-                } else {
-                    rankText.innerText = "💪 次こそリベンジ！";
-                }
+                // ※ ランクテキスト（rankText）の処理は削除しました
 
                 showScreen('result-screen');
             }
@@ -1039,7 +1309,7 @@
             // ▼▼ 追加：トップに戻る時に背景色をデフォルトに戻す ▼▼
             document.body.style.background = "";
 
-            showScreen('start-screen');
+
         }
 
         // ▼▼ ここから追加 ▼▼
@@ -1060,19 +1330,19 @@
         });
 
 
-        // === ここから追加：画像の先回り読み込み（プリロード） ===
         window.addEventListener('load', function () {
-            // 最初のスタート画面が表示されてから1秒後に、全画像を裏側でこっそりダウンロード開始
             setTimeout(function () {
                 songDatabase.forEach(function (song) {
-                    if (song.image) {
-                        const preImg = new Image();
-                        preImg.src = song.image;
-                    }
+                    preloadImage(song.image);
                 });
+                for (const key in genreResultData) {
+                    if (genreResultData[key] && genreResultData[key].images) {
+                        preloadImageList(genreResultData[key].images);
+                    }
+                }
+                preloadImage("images/総合評価.png");
             }, 1000);
         });
-        // === ここまで追加 ===
 
 
 
